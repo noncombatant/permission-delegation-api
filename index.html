@@ -1,14 +1,29 @@
-<p>Fortunately we already have some keywords defined in the Permissions API spec:
-<a href="https://w3c.github.io/permissions/#permission-registry">the Permissions
-API Registry</a>.</p>
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8"/>
+<meta name=viewport content="width=device-width, initial-scale=1"/>
+<title>Permission Delegation API</title>
 
-<!-- Previous CL that implemented some of this, for Geolocation:
-https://codereview.chromium.org/1287183005/
--->
+<body>
+
+<h1>Permission Delegation API</h1>
+
+<p>Editors: <a href="mailto:palmer@google.com">Chris Palmer</a> and <a
+href="mailto:raymes@google.com">Raymes Khoury</a> (Google, Inc.)</p>
+
+<h2>Abstract</h2>
+
+<p>TODO</p>
+
+<h2>Introduction</h2>
+
+<p>TODO</p>
 
 <p><a
 href="https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0/edit#">Simplifying
 iframe Permission Scoping in Chrome</a></p>
+
+<h2>Delegating Permissions</h2>
 
 <p>There are 2 ways for an embedder to delegate permission grants to an embedee: A
 declarative syntax in the HTML tag that instantiates the embedee; and an
@@ -16,7 +31,10 @@ imperative syntax that extends the Permissions API. The imperative form also
 offers a way for embedders to query for delegated permission grants to embedees,
 and a way for embedders to undelegate permissions from embedees.</p>
 
-<h2>Delegating Permissions</h2>
+<p>In both forms of the API, the caller needs names to refer to the permissions
+that the Open Web Platform provides. These names come from the <a
+href="https://w3c.github.io/permissions/#permission-registry">the Permissions
+API Registry</a>.</p>
 
 <h3>Declarative API</h3>
 
@@ -72,3 +90,84 @@ navigator.permissions.query({name: 'geolocation', frame: embedee})
 <pre>
 navigator.permissions.undelegate(embedee, 'geolocation')
 </pre>
+
+<!-- Previous CL that implemented some of this, for Geolocation:
+https://codereview.chromium.org/1287183005/
+-->
+
+<h2>Threat Models And Risks</h2>
+
+<p>TODO</p>
+
+<h2>Security Considerations</h2>
+
+<h3>Breaks Principle Of Least Privilege</h3>
+
+<p>The obvious downside of this proposal is that an iframe can’t get access to a
+permission without the top level frame also getting access to the permission.
+For example, currently when purchasing an airline ticket on the British Airways
+website with an AMEX credit card, an iframe navigated to the AMEX site may ask
+for your location in order to verify your purchase. Under this proposal, the
+user would have to give access to their location to British Airways as well as
+AMEX instead of just AMEX. Note that the decision would only be persisted for
+British Airways.</p>
+
+<p>We could extend this scenario to a potentially more problematic case where a
+less trustworthy site, such as https://suspicious.com also allows purchases and
+embeds an AMEX frame for credit card verification. Now the user has to give
+access to their location to https://suspicious.com as well as AMEX to complete
+their purchase which obviously is not ideal. </p>
+
+<p>On the flip side, in the current situation where iframes are allowed to request
+location directly, https://suspicious.com can pretend to embed AMEX and try to
+phish the user’s location access (note that there may be other ways to mitigate
+this risk as well).</p>
+
+<h3>Breaks Legacy Applications</h3>
+
+<p>Web apps that currently utilise iframes that request permissions will be
+broken by this proposal. In order to restore functionality, website owners will
+need to change their &lt;iframe&gt; tags to specify which permissions they wish
+to delegate. We have given more detail about the nature of this breakage in the
+section below on compatibility risk. In particular the usage of permission
+features in iframes is already very low on the web, meaning the impact should be
+small.</p>
+
+<p>The upside of this breakage is that any harmful/annoying permission requests
+from third party iframes, which website owners did not intend their users to be
+exposed to will be prevented.</p>
+
+<p>Furthermore, this proposal would cause secure (HTTPS) iframes embedded in
+non-secure (HTTP) sites to no longer be capable of getting access to
+permissions. The reason is that the availability of “powerful features” on
+non-secure origins is being phased out (see the Secure Contexts spec). This
+means that a top level HTTP site would never be able to access a permission in
+order to delegate it. This is actually not more restrictive than what is
+specified in the Secure Contexts spec, which requires all ancestor frames be
+secure in order for a frame to be considered secure (see the section on
+Ancestral Risk). So this proposal would not result in additional breakages
+compared with what is planned to be implemented in that specification.</p>
+
+<h3>Changing iframe Permissions</h3>
+
+<p>Another, longer-term downside is that it is hard to change permissions on
+&lt;iframe&gt; tags that have already been deployed. This is made worse by the
+fact that iframes tend to be fairly widely copy/pasted. For example, to make it
+easy for developers to embed YouTube videos, YouTube provides a HTML
+&lt;iframe&gt; snippet which can be pasted into a website. If the permissions
+required to run YouTube ever changed, it would be impossible for YouTube to
+update all the users. In some ways this could be considered a good thing, as
+first party website owners would explicitly have to decide whether to allow an
+iframe to get access to a permission.</p>
+
+<h2>Privacy Considerations</h2>
+
+<p>TODO</p>
+
+<h2>Implementation Considerations</h2>
+
+<p>TODO</p>
+
+<h2>Acknowledgements</h2>
+
+</body>

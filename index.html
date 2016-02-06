@@ -36,6 +36,17 @@ that the Open Web Platform provides. These names come from the <a
 href="https://w3c.github.io/permissions/#permission-registry">the Permissions
 API Registry</a>.</p>
 
+<p>In both forms of the API, both embedder and embedee must be qualified to
+receive the permission grant, and the user agent must actually grant the
+permission to the embedder (for example by prompting the user to grant the
+permission). How individual UAs implement this varies.</p>
+
+<p>Note that potentially this gives embedders more privilege than may be
+strictly necessary; see <a href="#least-privilege">Breaks Principle Of Least
+Privilege</a>. It also means that embedders have an incentive to police their
+embedees, because bad behavior (such as abusing granted permissions) on the part
+of embedees is likely to reflect on embedders.</p>
+
 <h3>Declarative API</h3>
 
 <p>For example, consider an embedder https://restaurant.example.net whose
@@ -101,6 +112,7 @@ https://codereview.chromium.org/1287183005/
 
 <h2>Security Considerations</h2>
 
+<a name="least-privilege"></a>
 <h3>Breaks Principle Of Least Privilege</h3>
 
 <p>The obvious downside of this proposal is that an iframe can’t get access to a
@@ -169,5 +181,7 @@ iframe to get access to a permission.</p>
 <p>TODO</p>
 
 <h2>Acknowledgements</h2>
+
+<p>TODO</p>
 
 </body>

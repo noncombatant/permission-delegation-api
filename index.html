@@ -4,32 +4,171 @@
 <meta name=viewport content="width=device-width, initial-scale=1"/>
 <title>Permission Delegation API</title>
 
+<script src='https://www.w3.org/Tools/respec/respec-w3c-common'
+class='remove'></script>
+
+<script class='remove'>
+// (this is to make tidy happy)
+var respecConfig = {
+  specStatus:           "ED",
+  shortName:            "permission-delegation",
+  //publishDate:          "2016-02-17",
+  //previousPublishDate:  "2016-02-17",
+  //previousMaturity:     "WD",
+  edDraftURI: "https://github.com/noncombatant/permission-delegation-api",
+  // if this is a LCWD, uncomment and set the end of its review period
+  // lcEnd: "20015-08-05",
+  noIDLIn:       true,
+  noLegacyStyle: true,
+  editors: [
+    {
+      name: "Raymes Khoury",
+      company: "Google Inc.",
+      companyURL: "https://google.com/",
+      w3cid: 45389
+    },
+    {
+      name: "Chris Palmer",
+      company: "Google Inc.",
+      companyURL: "https://google.com/",
+      w3cid: 45389
+    }
+  ],
+  otherLinks: [{
+    key: 'Participate',
+    data: [{
+              value: 'We are on Github.',
+              href: 'https://github.com/noncombatant/permission-delegation-api'
+          }, {
+              value: 'File a bug.',
+              href: 'https://github.com/noncombatant/permission-delegation-api/issues'
+          }, {
+              value: 'Commit history.',
+              href: 'https://github.com/noncombatant/permission-delegation-api/commits/gh-pages'
+          }, {
+              value: 'Mailing list.',
+              href: 'http://lists.w3.org/Archives/Public/public-webappsec/'
+          }]
+  },{
+    key: 'Implementation status',
+    data: [{
+        value: "Blink/Chromium",
+        href: "http://crbug.com/new"
+    }, {
+        value: "Gecko",
+        href: "TODO"
+    }]
+  }],
+  wg:           "Web Application Security Working Group",
+  wgURI:        "http://www.w3.org/2011/webappsec/",
+  wgPublicList: "public-webappsec",
+  wgPatentURI:  "http://www.w3.org/2004/01/pp-impl/49309/status",
+};
+</script>
+
+</head>
+
 <body>
 
-<h1>Permission Delegation API</h1>
+<section id='abstract'>
 
-<p>Editors: <a href="mailto:palmer@google.com">Chris Palmer</a> and <a
-href="mailto:raymes@google.com">Raymes Khoury</a> (Google, Inc.)</p>
+The <cite>Permission Delegation API</cite> allows a web application (the
+<dfn>embedder</dfn> to explicitly delegate and un-delegate permissions that it
+holds to embedded applications from other origins. Embedded applications are
+known as <dfn>embedees</dfn>. It also allows embedders to be aware of the status
+of a given permission in the embedee, to know whether it is granted, denied, or
+if the user will be asked whether the permission should be granted. Embedders
+can also handle events fired when embedees request to use or query the status of
+permissions.
 
-<h2>Abstract</h2>
+</section>
+
+<section id='sotd'></section>
+
+<section id='conformance'>
+
+<p>This specification defines conformance criteria that apply to a single
+product: the <dfn>user agent</dfn> that implements the interfaces that it
+contains.</p>
+
+<p>Implementations that use ECMAScript to expose the APIs defined in this
+specification MUST implement them in a manner consistent with the ECMAScript
+Bindings defined in the Web IDL specification [[!WEBIDL]].</p>
+
+</section>
+
+<section>
+
+<h2>Dependencies</h2>
+
+<p>The following concepts and interfaces are defined in [[!HTML]]:</p>
+
+<ul>
+
+<li><a
+href='https://html.spec.whatwg.org/multipage/browsers.html#origin-2'><dfn>origin</dfn></a>
+of a <a
+href='https://html.spec.whatwg.org/multipage/dom.html#document'><dfn>Document</dfn></a>
+and a <a
+href='https://html.spec.whatwg.org/multipage/workers.html#workers'><dfn>worker</dfn></a>.</li>
+
+<li><dfn><a
+href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue
+a task</a></dfn></li>
+
+<li><dfn><a
+href="https://html.spec.whatwg.org/multipage/webappapis.html#fire-a-simple-event">fire
+a simple event</a></dfn></li>
+
+<li><dfn><a
+href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handlers">event
+handler</a></dfn></li>
+
+<li><dfn><a
+href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-event-type">event
+handler event type</a></dfn></li>
+
+<li><dfn><a
+href='https://html.spec.whatwg.org/multipage/browsers.html#window'>Window</a></dfn></li>
+
+<li><dfn><a
+href='https://html.spec.whatwg.org/multipage/webappapis.html#global-object'>global
+object</a></dfn></li>
+
+</ul>
+
+<p><a
+href='http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects'>
+<dfn>Promise</dfn> objects</a> are defined in [[!ECMASCRIPT]].</p>
+
+</section>
+
+<section class='informative'>
+
+<h2>Scope Of This Document</h2>
 
 <p>TODO</p>
 
-<h2>Introduction</h2>
+</section>
 
-<p>TODO</p>
+<section class='informative'>
+
+<h2>Problem Description</h2>
 
 <p><a
 href="https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0/edit#">Simplifying
 iframe Permission Scoping in Chrome</a></p>
 
+</section>
+
 <h2>Delegating Permissions</h2>
 
-<p>There are 2 ways for an embedder to delegate permission grants to an embedee: A
-declarative syntax in the HTML tag that instantiates the embedee; and an
+<p>There are 2 ways for an embedder to delegate permission grants to an embedee:
+A declarative syntax in the HTML tag that instantiates the embedee; and an
 imperative syntax that extends the Permissions API. The imperative form also
 offers a way for embedders to query for delegated permission grants to embedees,
-and a way for embedders to undelegate permissions from embedees.</p>
+to handle events when embedees request or query for permissions, and a way for
+embedders to undelegate permissions from embedees.</p>
 
 <p>In both forms of the API, the caller needs names to refer to the permissions
 that the Open Web Platform provides. These names come from the <a

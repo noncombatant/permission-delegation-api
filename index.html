@@ -80,6 +80,11 @@ notifications"&gt;&lt;/iframe&gt;
 
 <h3>Imperative API</h3>
 
+<h4>Delegating Permissions To Embedees</h4>
+
+<p>TODO: Consider <code>grant</code> and <code>revoke</code> rather than
+<code>delegate</code> and <code>undelegate</code>.</p>
+
 <pre>
 var embedee = document.getElementById('embedee')
 try {
@@ -91,14 +96,43 @@ try {
 }
 </pre>
 
+<h4>Querying The Status Of An Embedee’s Permissions</h4>
+
 <pre>
+var embedee = document.getElementById('embedee')
 navigator.permissions.query({name: 'geolocation', frame: embedee})
   .then(function(result) {
     // result === 'granted'
   });
 </pre>
 
+<h4>Handling Events When Embedees Ask For Permission</h4>
+
 <pre>
+var embedee = document.getElementById('embedee')
+embedee.addEventListener('requestPermissionGeolocation', function (e) {
+  // ...
+})
+</pre>
+
+<p>These events will fire whenever the embedee requests to use the permission,
+whether or not the embedder has granted it.</p>
+
+<pre>
+var embedee = document.getElementById('embedee')
+embedee.addEventListener('queryPermissionGeolocation', function (e) {
+  // ...
+})
+</pre>
+
+<p>These events will fire whenever the embedee invokes
+<code>navigator.permissions.query</a> for the permission, whether or not the
+embedder has granted it.</p>
+
+<h4>Un-Delegating Permissions</h4>
+
+<pre>
+var embedee = document.getElementById('embedee')
 navigator.permissions.undelegate(embedee, 'geolocation')
 </pre>
 

@@ -73,7 +73,7 @@ var respecConfig = {
 <section id='abstract'>
 
 The <cite>Permission Delegation API</cite> allows a web application (the
-<dfn>embedder</dfn> to explicitly delegate and un-delegate permissions that it
+<dfn>embedder</dfn>) to explicitly delegate and un-delegate permissions that it
 holds to cross-origin embedded applications (known as <dfn>embedees</dfn>). It
 also allows embedders to query the status of a given permission in the
 embedee: to know whether it is granted, denied, or if the user will be asked
@@ -180,8 +180,9 @@ an API for delegation. </p>
 <p>There are several additional operations that are useful in conjunction with
 delegating access which are also within scope of this document:
   <ul>
-    <li>Revoking delegated access from an embedded frame.</li>
-    <li>Querying the status of a permission grant in an embedded frame.</li>
+    <li>Revoking delegated access from an embedee.</li>
+    <li>Querying the status of delegation to an embedee.</li>
+  </ul>
 </p>
 
 <p>Allowing permission requests made by embedded frame to intercepted by an
@@ -191,8 +192,15 @@ been left out of this document for the time being.</p>
 
 </section>
 
+<section>
+
 <h2>Definitions</h2>
+
 TODO: define embedder, embedee, delegate, undelegate?
+
+</section>
+
+<section>
 
 <h2>Delegating Permissions</h2>
 
@@ -227,6 +235,8 @@ access to permissions without embedders having to get access up front.</p>
 implicitly un-delegated and the embedee will lose access. This prevents
 unintentionally delegating access to other origins.</p>
 
+<section>
+
 <h3>Delegation via the Declarative API</h3>
 
 The permissions attribute is defined on the <a>iframe element<a>.
@@ -243,6 +253,10 @@ set of unique space-separated tokens that are ASCII case-insensitive. The
 allowed values are the permission names that come from the <a
 href="https://w3c.github.io/permissions/#permission-registry">PermissionName</a>
 enum in the Permissions API.</p>
+
+</section>
+
+<section>
 
 <h3>Delegation via the Imperative API</h3>
 
@@ -264,6 +278,8 @@ functions it must contain a field which specifies the embedee:
 <dl class='idl' title='dictionary PermissionDescriptor'>
   <dt>
     required PermissionName <a>name</a>
+  </dt>
+  <dt>
     HTMLIframeElement embedee
   </dt>
 </dl>
@@ -278,9 +294,13 @@ given permissions to no longer be delegated to their embedees.</p>
 <p>The isDelegated function returns a promise which will resolve to true if the
 permission is delegated to the given frame or to false otherwise.</p>
 
-<h2>Examples</h2>
+</section>
 
-<h3>Example 1</h3>
+</section>
+
+<section>
+
+<h2>Examples</h2>
 
 <p>Consider an embedder https://restaurant.example.net whose developers want to
 show a map on the page that enables people to get directions to the restaurant.
@@ -288,9 +308,8 @@ They can do so by instantiating an iframe to the maps service
 https://maps.example.com, and by explicitly delegating the
 <var>geolocation</var> permission:
 
-<pre>
-&lt;iframe id="embedee" src="https://maps.example.com/"
-permissions="geolocation"&gt;&lt;/iframe&gt;
+<pre class='example highlight'>
+&lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation"&gt;&lt;/iframe&gt;
 </pre>
 
 <p>Consider next that the developers of https://restaurant.example.net learn of
@@ -301,16 +320,13 @@ but also to be notified when they should leave to make it by the time their
 reservation starts.) The developers would explicitly grant the embedded iframe a
 second permission, <var>notifications</var>:</p>
 
-<pre>
-&lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation
-notifications"&gt;&lt;/iframe&gt;
+<pre class='example highlight'>
+&lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation notifications"&gt;&lt;/iframe&gt;
 </pre>
-
-<h3>Example 2</h3>
 
 Delegation via the imperative API:
 
-<pre>
+<pre class='example highlight'>
 var iframe = document.getElementById('embedee');
 navigator.permissions.delegate({embedee: iframe, name: 'geolocation'}).then(
   function() {
@@ -320,20 +336,16 @@ navigator.permissions.delegate({embedee: iframe, name: 'geolocation'}).then(
   });
 </pre>
 
-<h3>Example 3</h3>
-
 Undelegating permissions:
 
-<pre>
+<pre class='example highlight'>
 var iframe = document.getElementById('embedee');
 navigator.permissions.undelegate({embedee: iframe, name: 'geolocation'});
 </pre>
 
-<h3>Example 4</h3>
-
 Checking whether permission is delegated:
 
-<pre>
+<pre class='example highlight'>
 var iframe = document.getElementById('embedee');
 navigator.permissions.isDelegated({embedee: iframe, name: 'geolocation'})
   .then(function(result) {
@@ -341,13 +353,22 @@ navigator.permissions.isDelegated({embedee: iframe, name: 'geolocation'})
   });
 </pre>
 
+</section>
+
+<section>
+
 <h2>Security Considerations</h2>
 
 TODO: What security considerations need discussion here? This proposal in itself
 does not enable anything that was not already possible on the platform.
 
+</section>
+
+<section>
+
 <h2>Acknowledgements</h2>
 
 TODO
+</section>
 
 </body>

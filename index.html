@@ -73,9 +73,9 @@ var respecConfig = {
 <section id='abstract'>
 
 This document provides a recommendation for how UAs should manage access to
-permissions in cross-origin, embedded applications. Namely, it is recommended
-that UAs only allow permissions to be given to embedded applications via
-delegation from the embedding application.
+permissions in applications build from cross-origin components. Namely, it is
+recommended that UAs only allow permissions to be given to embedded applications
+via delegation from the embedding application.
 
 A web platform API for delegating permissions to embedded applications is also
 described. This API allows a web application to explicitly delegate and
@@ -146,13 +146,23 @@ element</a></dfn></li>
 href='http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects'>
 <dfn>Promise</dfn> objects</a> are defined in [[!ECMASCRIPT]].</p>
 
+TODO: Add a cite to define permissions, and refer to the Permissions API (if we
+don’t already).
+
 </section>
 
 <section>
 
 <h2>Definitions</h2>
 
-TODO: define embedder, embedee, delegate, undelegate?
+An <dfn>embedder</dfn> is a frame that includes another frame (the
+<dfn>embedee</dfn>). For example, a top-level document that includes an iframe
+is embedding that iframe.
+
+An embedder can <dfn>delegate</dfn> permissions it holds to its embedee(s), thus
+allowing the embedee to use the powerful feature to which the permission grants
+access. Similarly, an embedder can <dfn>undelegate</dfn> (revoke) a permission
+from an embedee.
 
 </section>
 
@@ -174,7 +184,7 @@ problematic from the perspective of both the user and the embedder. There are 4
 reasons for this:
 <ol>
   <li>
-    User's don't have a good understanding of permission requests from
+    People don’t have a good understanding of permission requests from
     embedees. There is often no UA UI that identifies iframes or what origin
     is running. They may even be invisible on a page. The concept of
     composable applications is not a simple one to convey. The results of a user
@@ -182,9 +192,9 @@ reasons for this:
     granting access to when a permission request was coming from an embedee.
   </li>
   <li>
-    It's unclear how to persist decisions made about embedees. Different UAs
+    It’s unclear how to persist decisions made about embedees. Different UAs
     persist user decisions about embedees in different ways. Some use the
-    combination of the top-level web application's origin and the embedee's
+    combination of the top-level web application’s origin and the embedee’s
     origin to store the decision, such that the decision is only remembered in
     the context of the top level web application. Others only use the requesting
     origin. There are trade-offs here, for example if only the requesting origin
@@ -194,9 +204,9 @@ reasons for this:
     predict.
   </li>
   <li>
-    It's difficult to build understandable permission management UI. This is
+    It’s difficult to build understandable permission management UI. This is
     particularly true if UAs persist decisions to a combination of the top-level
-    web application's origin and the embedee's origin. UI surfaces such as
+    web application’s origin and the embedee’s origin. UI surfaces such as
     revocation and auditing UI need to be able to deal with displaying two
     origins in a way that the user can understand.
   </li>
@@ -248,7 +258,7 @@ via postMessage. This document describes a new web platform API to facilitate
 delegation in a standard way. This would make it much easier and more efficient
 to delegate access and in a way that is still under the control of the UA. In
 addition to delegating access, the ability to revoke delegated access and query
-it's status is also exposed in the API.</p>
+its status is also exposed in the API.</p>
 
 </section>
 
@@ -356,7 +366,7 @@ functions it must contain a field which specifies the embedee:
   </dt>
 </dl>
 
-<p>The embedee must be nested in the caller's browsing context.</p>
+<p>The embedee must be nested in the caller’s browsing context.</p>
 
 <p>Calling delegate will cause the given permissions to be delegated to their
 embedees. The promise returned will resolve if the permission is successfully

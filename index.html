@@ -146,8 +146,9 @@ element</a></dfn></li>
 href='http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects'>
 <dfn>Promise</dfn> objects</a> are defined in [[!ECMASCRIPT]].</p>
 
-TODO: Add a cite to define permissions, and refer to the Permissions API (if we
-don’t already).
+<p>TODO: Add a cite to define permissions, and refer to the Permissions API
+(if we don’t already). We may also need a cite to define origin. And
+Powerful Features.</p>
 
 </section>
 
@@ -163,6 +164,9 @@ is embedding that iframe.</p>
 thus allowing the embedee to use the powerful feature to which the permission
 grants access. Similarly, an embedder can <dfn>undelegate</dfn> (revoke) a
 permission from an embedee.</p>
+
+<p>Applications built from an embedder and 1 or more embedees from different
+origins are <dfn>composed applications</dfn>.</p>
 
 </section>
 
@@ -184,32 +188,32 @@ perspective of both the user and the embedder. There are 4 reasons for this:</p>
 
 <ol>
   <li>
-    People don’t have a good understanding of permission requests from
-    embedees. There is often no UA UI that identifies that embedees or present
-    or what their origin is. They may even be invisible on a page. The concept
-    of composable applications is not a simple one to convey. The results of a
-    user study showed that participants were generally confused about who they
-    were granting access to when a permission request was coming from an
-    embedee.
+    People don’t have a good understanding of permission requests from embedees.
+    There is often no UI in the UA indicating that embedees are present or what
+    their origin is. They may even be invisible on a page. The concept of
+    composable applications is not a simple one to convey. The results of a user
+    study (TODO citation needed) showed that participants were generally
+    confused about who they were granting access to when a permission request
+    came from an embedee.
   </li>
   <li>
-    It’s unclear how to persist decisions made about embedees. Different UAs
-    persist user decisions about embedees in different ways. Some use the
-    combination of the top-level web application’s origin and the embedee’s
-    origin to store the decision, such that the decision is only remembered in
-    the context of the top level web application. Others only use the requesting
-    origin. There are trade-offs here, for example if only the requesting origin
-    is used, the user may be surprised that a decision about a top level web
-    application has also applied when that same origin is embedded on other
-    sites. The inconsistency across UAs also makes behavior hard for users to
-    predict.
+    It’s unclear how a UA should persist the permission decisions people make
+    for composed applications. Different UAs persist people’s decisions about
+    embedees in different ways. Some UAs associate the permission grant to the
+    combination of the embedder’s origin and the embedee’s origin, such that the
+    UA recalls the decision about the embedee’s permissions only when embedded
+    in that same embedder. Other UAs associate the grant only to the requesting
+    origin, regardless of whether and where it is embedded. Either mechanism is
+    likely to violate people’s expectations, at least some of the time. The
+    inconsistency across — and even within — UAs further exacerbates the
+    problem.
   </li>
   <li>
     It’s difficult to build understandable permission management UI. This is
-    particularly true if UAs persist decisions to a combination of the top-level
-    web application’s origin and the embedee’s origin. UI surfaces such as
-    revocation and auditing UI need to be able to deal with displaying two
-    origins in a way that the user can understand.
+    particularly true if UAs persist decisions to a combination of the
+    embedder’s and embedee’s origin. UI surfaces such as for revocation and
+    auditing must cope with displaying two origins in a way that people can
+    understand.
   </li>
   <li>
     Embedders have no way to regulate access to their embedees. This means that
@@ -218,14 +222,15 @@ perspective of both the user and the embedder. There are 4 reasons for this:</p>
 </ol>
 </p>
 
-<p>In order to attempt to address these issues, this document recommends that
-UAs require embedders to delegate permissions to embedees in order for them to
-gain access. Delegation (in the context of this document) is the ability for an
-origin running in one frame to share a permission grant with an embedded,
-cross-origin frame without burdening the user with a need to give consent. Users
-would only ever be required to make permission decisions about top-level web
-applications: the one they are viewing on the page. The benefits of this, with
-relation to the above problems are:
+<p>To address these issues, we recommend that UAs require embedders to
+explicitly delegate permissions to embedees, rather than allow embeddees to
+unilaterally use or request to use powerful features. <dfn>Delegation</dfn>
+is the ability for an origin running in one frame to share a permission
+grant with an embedded, cross-origin frame. People would only ever be
+required to make permission decisions about the <em>apparent</em> origin of
+the application: that of the top-level embedder. The benefits of this, with
+relation to the above problems, are:</p>
+
 <ol>
   <li>
     The user does not need to understand the nature of composable web

@@ -473,43 +473,43 @@ mitigate this risk as well).</p>
 
 <h2>Other Risks</h2>
 
-<h3>Breaks Legacy Applications</h3>
+<h3>Compatibility</h3>
 
-<p>Web apps that currently utilise iframes that request permissions will be
-broken by this proposal. In order to restore functionality, website owners will
-need to change their &lt;iframe&gt; tags to specify which permissions they wish
-to delegate. We have given more detail about the nature of this breakage in the
-section below on compatibility risk. In particular the usage of permission
-features in iframes is already very low on the web, meaning the impact should be
-small.</p>
+<p>This document specifies breaking changes to the web platform. Namely,
+embedees that were once able to request and acquire permissions will no longer
+be able to do so. In order to restore functionality, embedders need to change
+their iframe tags to specify which permissions they wish to delegate. Usage of
+permissions from embedees is currently very low (citation needed), so the impact
+of this change should be small. It is recommended that UAs communicate this
+change with developers prior to implemenation in order to minimize the impact of
+the change. This can be done through the use of console warning messages or
+other channels.</p>
 
-<p>The upside of this breakage is that any harmful/annoying permission requests
-from third party iframes, which website owners did not intend their users to be
+<p>The upside of this breakage is that any harmful or annoying permission
+requests from embedees, which website owners did not intend their users to be
 exposed to will be prevented.</p>
 
-<p>Furthermore, this proposal would cause secure (HTTPS) iframes embedded in
-non-secure (HTTP) sites to no longer be capable of getting access to
-permissions. The reason is that the availability of “powerful features” on
-non-secure origins is being phased out (see the Secure Contexts spec). This
-means that a top level HTTP site would never be able to access a permission in
-order to delegate it. This is actually not more restrictive than what is
-specified in the Secure Contexts spec, which requires all ancestor frames be
-secure in order for a frame to be considered secure (see the section on
-Ancestral Risk). So this proposal would not result in additional breakages
-compared with what is planned to be implemented in that specification.</p>
+<p>It should also be noted that the restrictions specified in this document
+would prevent secure (HTTPS) embedees in non-secure (HTTP) embedders from
+getting access to permissions. The reason is that the availability of “powerful
+features” on non-secure origins is being phased out (see the Secure Contexts
+spec, citation needed). This means that a top level HTTP web application would
+never be able to access a permission in order to delegate it. This is actually
+not more restrictive than what is specified in the Secure Contexts spec, which
+requires all ancestor frames be secure in order for a frame to be considered
+secure (see the section on Ancestral Risk). The restrictions specified in this
+document would not result in additional breakages.</p>
 
-<h3>Changing iframe Permissions</h3>
+<h3>Changing Embedee Permissions</h3>
 
-<p>Another, longer-term downside is that it is hard to change permissions on
-&lt;iframe&gt; tags that have already been deployed. This is made worse by the
-fact that iframes tend to be fairly widely copy/pasted. For example, to make it
-easy for developers to embed YouTube videos, YouTube provides a HTML
-&lt;iframe&gt; snippet which can be pasted into a website. If the permissions
-required to run YouTube ever changed, it would be impossible for YouTube to
-update all the users. In some ways this could be considered a good thing, as
-first party website owners would explicitly have to decide whether to allow an
-iframe to get access to a permission.</p>
-
+<p>iframe tags tend to be fairly widely copy/pasted. For example, to make it
+easy for developers to embed YouTube videos, YouTube provides a HTML iframe
+snippet which can be pasted into a website. Once these snippets have been
+deployed, it is hard for embedees to have them changed. For example, if the
+permissions required to run YouTube ever changed, it would be impossible for
+YouTube to update all of its embedders. While this may be problematic for
+embedees, it gives embedders an opportunity to decide whether they really want
+the embedee to have access to the permission.</p>
 
 </section>
 

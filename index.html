@@ -235,15 +235,15 @@ relation to the above problems, are:</p>
   <li>
     The user does not need to understand the nature of composable web
     applications because they only ever make decisions about the top-level
-    web application.
+    origin.
   </li>
   <li>
     It is clear how to persist user decisions: they are only ever stored for the
-    top level web application.
+    top-level origin.
   </li>
   <li>
-    Because decisions are only ever made about the top level web application, it
-    is much easier to build permission management UI.
+    Because decisions are only ever made about the top-level origin, it is much
+    easier to build permission management UI.
   </li>
   <li>
     Because embedees cannot gain access on their own, embedders are able to
@@ -252,19 +252,20 @@ relation to the above problems, are:</p>
 </ol>
 </p>
 
-<p>Note that there is an implicit trade-off with delegation. Although the user
-is not burdened with the decision, it also means that control is taken out of
-their hands. A discussion of this tradeoff is given in the section on Security
-Considerations.</p>
+<p>Note that there is a necessary trade-off between scoping permission
+grants in as fine-grained a manner as possible versus scoping permission
+grants at a level of granularity that people can understand. See <a
+href="#security-considerations">Security Considerations</a>.</p>.
 
-<p>Delegation of permissions is already possible on the web platform. For
-example, if an origin in a frame has been granted access to use geolocation, it
-can expose access to the feature to other, cross-origin frames by communicating
-via postMessage. This document describes a new web platform API to facilitate
-delegation in a standard way. This would make it much easier and more efficient
-to delegate access and in a way that is still under the control of the UA. In
-addition to delegating access, the ability to revoke delegated access and query
-its status is also exposed in the API.</p>
+<p>Permission delegation is already possible on the web platform. For
+example, if a person has granted Geolocation to an origin in a frame, the
+origin can expose Geolocation data other, cross-origin frames via
+<code>postMessage</code> (among other mechanisms). This document describes a
+new web platform API that enables embedders to delegate permissions in a way
+that the UA can effectively mediate on behalf of users. In addition to
+delegating access, the API also exposes means to revoke and query delegated
+access. We intend for the API to be convenient to invoke and to afford
+efficient implementations.</p>
 
 </section>
 

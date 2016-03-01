@@ -155,14 +155,14 @@ don’t already).
 
 <h2>Definitions</h2>
 
-An <dfn>embedder</dfn> is a frame that includes another frame (the
+<p>An <dfn>embedder</dfn> is a frame that includes another frame (the
 <dfn>embedee</dfn>). For example, a top-level document that includes an iframe
-is embedding that iframe.
+is embedding that iframe.</p>
 
-An embedder can <dfn>delegate</dfn> permissions it holds to its embedee(s), thus
-allowing the embedee to use the powerful feature to which the permission grants
-access. Similarly, an embedder can <dfn>undelegate</dfn> (revoke) a permission
-from an embedee.
+<p>An embedder can <dfn>delegate</dfn> permissions it holds to its embedee(s),
+thus allowing the embedee to use the powerful feature to which the permission
+grants access. Similarly, an embedder can <dfn>undelegate</dfn> (revoke) a
+permission from an embedee.</p>
 
 </section>
 
@@ -177,19 +177,20 @@ the permission to the requesting origin. In many UAs these user decisions will
 also be persisted, such that the user will not have to make a decision for
 subsequent access requests.</p>
 
-<p>Web applications are composable: one web application (known as the
-<dfn>embedder</dfn>) can embed others: (known as <dfn>embedees</dfn>) by using
-the iframe HTML tag. If a cross-origin embedee request permissions, it can be
-problematic from the perspective of both the user and the embedder. There are 4
-reasons for this:
+<p>Web applications are composable: one web application (the embedder) can embed
+others (embedees) by using the <code>&lt;iframe&gt;</code> HTML tag. If a
+cross-origin embedee request permissions, it can be problematic from the
+perspective of both the user and the embedder. There are 4 reasons for this:</p>
+
 <ol>
   <li>
     People don’t have a good understanding of permission requests from
-    embedees. There is often no UA UI that identifies iframes or what origin
-    is running. They may even be invisible on a page. The concept of
-    composable applications is not a simple one to convey. The results of a user
-    study showed that participants were generally confused about who they were
-    granting access to when a permission request was coming from an embedee.
+    embedees. There is often no UA UI that identifies that embedees or present
+    or what their origin is. They may even be invisible on a page. The concept
+    of composable applications is not a simple one to convey. The results of a
+    user study showed that participants were generally confused about who they
+    were granting access to when a permission request was coming from an
+    embedee.
   </li>
   <li>
     It’s unclear how to persist decisions made about embedees. Different UAs
@@ -517,6 +518,7 @@ iframe to get access to a permission.</p>
 <h2>Acknowledgements</h2>
 
 TODO
+
 </section>
 
 </body>

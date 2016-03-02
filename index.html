@@ -172,6 +172,8 @@ href='http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects'>
 <li><dfn><a href='https://www.w3.org/TR/permissions/#permission-registry'>PermissionName enum</a></dfn></li>
 
 <li><dfn><a href='https://www.w3.org/TR/permissions/#permissions-interface'>Permissions interface</a></dfn></li>
+
+<li><dfn><a href='https://www.w3.org/TR/permissions/#permission-definition'>PermissionDescriptor</a></dfn></li>
 </ul>
 
 <p>The following concepts and interfaces are defined in [[!powerful-features]]:</p>
@@ -381,8 +383,9 @@ enum</a>.</p>
 
 <h3>Delegation via the Imperative API</h3>
 
-The <a>Permissions interface</a> is extended to provide functions for delegating
-and undelegating permissions as well as querying the delegation status.
+<p>The <a>Permissions interface</a> is extended to provide functions for
+delegating and undelegating permissions as well as querying the delegation
+status.</p>
 
 <pre class='idl'>
   [Exposed=(Window,Worker)]
@@ -393,8 +396,8 @@ and undelegating permissions as well as querying the delegation status.
   };
 </pre>
 
-PermissionDescriptor is defined in the Permission API. When called with these
-functions it must contain a field which specifies the embedee:
+<p>When called with these functions <a>PermissionDescriptor</a> must contain a
+field which specifies the embedee:</p>
 
 <dl class='idl' title='dictionary PermissionDescriptor'>
   <dt>
@@ -571,5 +574,7 @@ TODO
 <!--
 
 TODO: Add a way to extend the names of permissions/capabilities?
+
+TODO: Add a syntax for delegating *all* permissions?
 
 -->

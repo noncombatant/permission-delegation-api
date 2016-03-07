@@ -468,30 +468,48 @@ navigator.permissions.isDelegated({embedee: iframe, name: 'geolocation'})
 
 <h2>Security Considerations</h2>
 
-<p>TODO(palmer): expand this to argue the transfer of the trust decision from
-the user to the embedder and tie into the section below.</p>
-
 <h3>Breaks Principle Of Least Privilege</h3>
 
-<p>The obvious downside of this proposal is that an iframe can’t get access to a
-permission without the top level frame also getting access to the permission.
-For example, currently when purchasing an airline ticket on the British Airways
-website with an AMEX credit card, an iframe navigated to the AMEX site may ask
-for your location in order to verify your purchase. Under this proposal, the
-user would have to give access to their location to British Airways as well as
-AMEX instead of just AMEX. Note that the decision would only be persisted for
-British Airways.</p>
+<p>The obvious downside of this proposal is that an embedee can’t get access to
+a permission without the top-level embedder also getting access to the
+permission. Thus, the permission grant is broader than is strictly
+necessary.</p>
 
-<p>We could extend this scenario to a potentially more problematic case where a
-less trustworthy site, such as https://suspicious.com also allows purchases and
-embeds an AMEX frame for credit card verification. Now the user has to give
-access to their location to https://suspicious.com as well as AMEX to complete
-their purchase which obviously is not ideal. </p>
+<p>For example, consider an airline ticketing site (https://example.air) that
+embeds a payment processor site (https://example.cc) in an iframe. To better
+authenticate or verify the purchase of tickets, example.cc requests access to
+the UA's geolocation API. Under this proposal, the user would have to grant
+geolocation API access to the example.air origin, which would then delegate the
+power to example.cc. The grant would adhere, perhaps persistently, to
+example.air — regardless of what other origins it may embed — rather than to
+example.cc.</p>
 
-<p>On the flip side, in the current situation where iframes are allowed to
-request location directly, https://suspicious.com can pretend to embed AMEX and
-try to phish the user’s location access (note that there may be other ways to
-mitigate this risk as well).</p>
+<p>We could extend this scenario to a potentially more problematic case in which
+a less trustworthy site (https://example.suspicious) also allows purchases and
+embeds an example.cc frame for credit card verification. Now the user has to
+give access to their location to example.suspicious as well as to example.cc to
+complete their purchase. Obviously, this is not ideal.</p>
+
+<p>Conversely, if embedees can directly request access to powerful features
+(currently the case in many UAs), people may not understand where the request
+comes from — although example.air is a composed application, people are often
+unaware that web applications can be composed of an embedder and potentially
+several embedees. Thus, when an embedee requests a permission grant, the person
+may not have any context for or understanding of what the UA is asking them. We
+believe that people perceive the top-level site as the ‘active application’ — if
+they perceive any ‘active application’ at all. Thus, we believe that if there is
+any chance for an origin to be or provide context for a permission request, it
+is the top-level, embedder origin.</p>
+
+<p>Additionally, embedees can take advantage of this confusion, and request
+permissions (or otherwise cost the person’s attention) in ways that disrupt the
+trust relationship between the person and the top-level embedder origin.</p>
+
+<p>This proposal puts the onus on the embedder, which has chosen to embed its
+embedees, to state the value proposition for the permission grant and to
+establish a relationship with the person using the application. It also enables
+and incentivizes embedders to ‘police’ their embedees in order to remain
+trustworthy.</p>
 
 </section>
 

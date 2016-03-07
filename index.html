@@ -470,6 +470,8 @@ navigator.permissions.isDelegated({embedee: iframe, name: 'geolocation'})
 
 <h2>Security Considerations</h2>
 
+<section>
+
 <h3>Breaks Principle Of Least Privilege</h3>
 
 <p>The obvious downside of this proposal is that an embedee can’t get access to
@@ -512,6 +514,8 @@ embedees, to state the value proposition for the permission grant and to
 establish a relationship with the person using the application. It also enables
 and incentivizes embedders to ‘police’ their embedees in order to remain
 trustworthy.</p>
+
+</section>
 
 </section>
 
@@ -561,6 +565,27 @@ permissions required to run YouTube ever changed, it would be impossible for
 YouTube to update all of its embedders. While this may be problematic for
 embedees, it gives embedders an opportunity to decide whether they really want
 the embedee to have access to the permission.</p>
+
+</section>
+
+<section>
+
+<h3>Reduced User Control</h3>
+
+<p>Some people may want to be able to let an embed<em>ee</em> origin they
+consider trustworthy have access to some permissions, but may not want to grant
+those same permissions to an embedd<em>er</em> they consider untrustworthy. <a
+href="#breaks-principle-of-least-privilege">Permission grants adhere to the
+embedder</a>, which presents a paradox of control: it seems we can present
+people an option to control permissions at a coarse but understandable
+granularity; or we can present an option to control permissions at a fine but
+confusing granularity.</p>
+
+<p>UAs MAY provide configuration options to mitigate this risk, such as making
+permission grants be ephemeral (non-persistent) by default, persisting
+permission grants on the basis of the (embedder, embedee) tuple rather than just
+by embedder, or other means. This proposal does not recommend or require any
+specific mitigation techniques.</p>
 
 </section>
 

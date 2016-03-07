@@ -81,6 +81,11 @@ var respecConfig = {
         "Chris Palmer"
       ],
     },
+    "notifications-api": {
+      title:    "Notifications API",
+      href:     "https://notifications.spec.whatwg.org/",
+      authors:  [ "Anne van Kesteren" ],
+    },
   },
 };
 
@@ -425,11 +430,11 @@ https://maps.example.com, and by explicitly delegating the
 
 <p>Consider next that the developers of https://restaurant.example.net learn of
 a new feature that https://maps.example.com provides, which is to send people
-notifications when it’s time to leave to get to their destination on time. For
-example, people may want to know not just the directions to the restaurant, but
-also to be notified when they should leave to make it by the time their
-reservation starts. The developers would explicitly grant the embedded iframe a
-second permission, <var>notifications</var>:</p>
+notifications [[notifications-api]] when it’s time to leave to get to their
+destination on time. For example, people may want to know not just the
+directions to the restaurant, but also to be notified when they should leave to
+make it by the time their reservation starts. The developers would explicitly
+grant the embedded iframe a second permission, <var>notifications</var>:</p>
 
 <pre class='example highlight'>
 &lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation notifications"&gt;&lt;/iframe&gt;

@@ -359,7 +359,9 @@ interface HTMLIFrameElement : HTMLElement {
 permissions to the embedee running in the iframe. Its value must be an unordered
 set of unique space-separated tokens that are ASCII case-insensitive. The
 allowed values are the permission names that come from the <a>PermissionName
-enum</a>.</p>
+enum</a>. Additionally, the embedder may specify the special token
+<code>*</code> to indicate that it intends to grant any permissions it may have to
+the embeddee.</p>
 
 </section>
 
@@ -570,14 +572,15 @@ the embedee to have access to the permission.</p>
 
 TODO
 
+<p>Thanks to Adrienne Porter Felt, Alex Russell, Ben Wells, and Mike West for
+advice and feedback.</p>
+
 </section>
 
 </body>
 
 <!--
 
-TODO: Add a way to extend the names of permissions/capabilities?
-
-TODO: Add a syntax for delegating *all* permissions?
+TODO(palmer): Add a way to extend the names of permissions/capabilities?
 
 -->

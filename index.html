@@ -86,6 +86,14 @@ var respecConfig = {
       href:     "https://notifications.spec.whatwg.org/",
       authors:  [ "Anne van Kesteren" ],
     },
+    "protection-of-information": {
+      title: "The Protection of Information in Computer Systems",
+      href: "http://www.cs.virginia.edu/~evans/cs551/saltzer/",
+      authors:  [
+        "Jerome H. Saltzer",
+        "Michael D. Schroeder"
+      ]
+    },
   },
 };
 
@@ -196,7 +204,7 @@ origins are <dfn>composed applications</dfn>.</p>
 
 <section class='informative'>
 
-<h2>Background and Motivations</h2>
+<h2>Background And Motivations</h2>
 
 <p>Web applications are able to request permissions, such as geolocation, using
 various APIs on the web platform. In many UAs these permission requests will
@@ -584,13 +592,51 @@ href="#breaks-principle-of-least-privilege">Permission grants adhere to the
 embedder</a>, which presents a paradox of control: it seems we can present
 people an option to control permissions at a coarse but understandable
 granularity; or we can present an option to control permissions at a fine but
-confusing granularity.</p>
+confusing granularity. (See <a href="#background-and-motivations">Background And
+Motivations</a>.)</p>
 
 <p>UAs MAY provide configuration options to mitigate this risk, such as making
 permission grants be ephemeral (non-persistent) by default, persisting
 permission grants on the basis of the (embedder, embedee) tuple rather than just
 by embedder, or other means. This proposal does not recommend or require any
 specific mitigation techniques.</p>
+
+<p>Composing origins to create more complex web applications is analogous to
+application composition from components of different sources on other platforms,
+and other platforms also tie the principal to just the top-level application.
+(For a definition of the term <em>principal</em>, see
+[[protection-of-information]].)</p>
+
+<ul>
+
+<li>Many Android applications include libraries (often packaged as JARs) from
+third parties, but the Android platform treats the embedding package as the
+principal, and adheres permission grants to that package. Consider an email
+reader, com.example.mail, that includes an IMAP client implemented in a JAR
+provided by the Foo Organization, that provides the package org.foo.imap.client.
+Android exposes only com.example.mail to the user, gives it a unique Linux UID,
+and all permission grants and revocations adhere to com.example.mail. If another
+package, e.g. org.messaging.android, also happens to use the org.foo.imap.client
+JAR, the JAR does not have the same permissions in both embedding packages.</li>
+
+<li>Many Windows applications include libraries (often packaged as DLLs) from
+third parties. Similar to the Android example, Windows separates privileges by
+associating each process with an access token. Processes holding different
+tokens are protected from each other, regardless of what DLLs they have loaded
+(even if they have loaded some of the same DLLs) and regardless of the source of
+those DLLs.</li>
+
+</ul>
+
+<p>Neither the Android nor Windows platforms afford the user any fine-grained
+control over the permissions available to code that ‘top-level’ applications
+depend on. This proposal for the Open Web Platform is consistent with the
+existing, analogous behavior on other platforms. Reasonable people may disagree
+on whether or not that is a good thing, but advocates for fine-grained control
+of dependencies must contend with the problems of user confusion, lack of
+context, and warning fatigue that fine-grained control would raise, and has
+proven to raise. TODO(palmer): Get a cite from felt or ainslie on reduced
+responsiveness to warnings.</p>
 
 </section>
 

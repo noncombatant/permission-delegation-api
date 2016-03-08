@@ -137,8 +137,14 @@ href='https://html.spec.whatwg.org/multipage/workers.html#workers'><dfn>worker</
 <li><dfn><a
 href='https://html.spec.whatwg.org/multipage/browsers.html#window'>Window</a></dfn></li>
 
-<li><dfn><a href='https://html.spec.whatwg.org/multipage/embedded-content.html#the-iframe-element'>iframe
-element</a></dfn></li>
+<li><dfn><a href='https://html.spec.whatwg.org/multipage/embedded-content.html#the-iframe-element'>
+iframe element</a></dfn></li>
+
+<li><dfn><a href='https://html.spec.whatwg.org/multipage/browsers.html#nested-browsing-context'>
+nested browsing context</a></dfn></li>
+
+<li><dfn><a href='https://html.spec.whatwg.org/multipage/browsers.html#top-level-browsing-context'>
+top-level browsing context</a></dfn></li>
 
 </ul>
 
@@ -158,10 +164,10 @@ href='http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects'>
 
 <p>A <dfn><a href='https://www.w3.org/TR/powerful-features/#terms'>privileged
 context</a></dfn> is defined in [[!powerful-features]]. A <dfn>permission</dfn>,
-generally, is an affordance in the UA to allow, deny, throttle, or otherwise regulate
-access to a <dfn>powerful feature</dfn> that the user, through the UA, may grant
-to the web origin. Examples of powerful features include geolocation and the
-<code>getUserMedia</code> API.</p>
+generally, is an affordance in the UA to allow, deny, throttle, or otherwise
+regulate access to a <dfn>powerful feature</dfn> that the user, through the UA,
+may grant to the web origin. Examples of powerful features include geolocation
+and the <code>getUserMedia</code> API.</p>
 
 <p><dfn><a href='https://www.w3.org/TR/service-workers/#service-worker-concept'>
 service workers</a></dfn> are defined in [[service-workers]].</p>
@@ -172,12 +178,11 @@ service workers</a></dfn> are defined in [[service-workers]].</p>
 
 <h2>Definitions</h2>
 
-<p>TODO(raymes): should we talk in terms of browsing context, nested browsing
-context and <a>Document</a> here in this sectio (rather than frames)?</p>
-
-<p>An <dfn>embedder</dfn> is a frame that includes another frame (the
-<dfn>embedee</dfn>). For example, a top-level document that includes an iframe
-is embedding that iframe.</p>
+<p>An <dfn>embedder</dfn> is a <a>Document</a> that includes a <a>nested
+browsing context</a>. An <dfn>embedee</dfn> is a Document contained
+within the nested browsing context of an embedder. Typically, an embedder would
+include an embedee using an <a>iframe element</a>. A <dfn>top-level
+embedder</dfn> is an embedder loaded in a <a>top-level browsing context</a>.</p>
 
 <p>An embedder can <dfn>delegate</dfn> permissions it holds to its embedee(s),
 thus allowing the embedee to use the powerful feature to which the permission
@@ -290,22 +295,22 @@ efficient implementations.</p>
 
 <h2>Permission Restrictions for Embedded Web Applications</h2>
 
-<p>TODO(raymes): Talk in terms of embedders and embedees defined in this doc.
-</p>
+<p>Cross-origin embedees SHOULD only be able to acquire permission grants by
+explicit delegation from the embedder using the API described in
+<a href="#delegating-permissions">Delegating Permissions</a>. In cases where an
+embedder has chosen not to delegate a permission, the embedee SHOULD NOT be able
+to trigger permission prompts to the user and the embedee SHOULD NOT be able to
+acquire permission based on a prior decision made by the user.</p>
 
-<p>Cross-origin embedded applications SHOULD only be able to acquire permission
-grants by explicit delegation from the embedder using the API described in the
-section below. In cases where an embedder has chosen not to delegate a
-permission, the embedee SHOULD NOT be able to trigger permission prompts to the
-user and the embedee SHOULD NOT be able to acquire permission based on a prior
-decision made by the user.</p>
+<p>As an exception to the above restrictions, embedees MUST be able to access
+permissions that are granted to their associated <a>service worker</a>. These
+permissions can be trivially accessed by communicating with the service worker
+so there is no need to require delegation.</p>
 
-<p>UAs MAY allow cross-origin embedded applications to acquire permission grants
-through the use of advanced user configurations, such as custom whitelists.</p>
-
-<p>The above requirements do not apply to permissions that are granted to
-<a>service workers</a> as these can trivially be accessed from embedded
-applications.</p>
+<p>UAs MAY also allow cross-origin embedees to acquire permission grants through
+the use of advanced user configurations, such as custom whitelists (see
+<a href="#reduced-user-control">Reduced User Control</a> for further
+discussion).</p>
 
 </section>
 
@@ -360,8 +365,8 @@ permissions to the embedee running in the iframe. Its value must be an unordered
 set of unique space-separated tokens that are ASCII case-insensitive. The
 allowed values are the permission names that come from the <a>PermissionName
 enum</a>. Additionally, the embedder may specify the special token
-<code>*</code> to indicate that it intends to grant any permissions it may have to
-the embeddee.</p>
+<code>*</code> to indicate that it intends to grant any permissions it may have
+to the embeddee.</p>
 
 </section>
 
@@ -470,14 +475,10 @@ navigator.permissions.isDelegated({embedee: iframe, name: 'geolocation'})
 
 <h2>Security Considerations</h2>
 
-<section>
-
-<h3>Breaks Principle Of Least Privilege</h3>
-
-<p>The obvious downside of this proposal is that an embedee can’t get access to
-a permission without the top-level embedder also getting access to the
-permission. Thus, the permission grant is broader than is strictly
-necessary.</p>
+<p>The most obvious downside of this proposal is that it breaks the principle of
+least privilege. In particular, an embedee can’t get access to a permission
+without the top-level embedder also getting access to the permission. Thus, the
+permission grant is broader than is strictly necessary.</p>
 
 <p>For example, consider an airline ticketing site (https://example.air) that
 embeds a payment processor site (https://example.cc) in an iframe. To better
@@ -517,8 +518,6 @@ trustworthy.</p>
 
 </section>
 
-</section>
-
 <section class='informative'>
 
 <h2>Other Risks</h2>
@@ -545,7 +544,7 @@ exposed to will be prevented.</p>
 would prevent secure (HTTPS) embedees in non-secure (HTTP) embedders from
 getting access to permissions. The reason is that the availability of “powerful
 features” on non-secure origins is being phased out (see [[powerful-features]]).
-This means that a top level HTTP web application would never be able to access a
+This means that a top-level embedder would never be able to access a
 permission in order to delegate it. This is actually not more restrictive than
 what is specified in [[powerful-features]], which requires all ancestor frames
 be secure in order for a frame to be considered secure. The restrictions
@@ -575,17 +574,19 @@ the embedee to have access to the permission.</p>
 <p>Some people may want to be able to let an embed<em>ee</em> origin they
 consider trustworthy have access to some permissions, but may not want to grant
 those same permissions to an embedd<em>er</em> they consider untrustworthy. <a
-href="#breaks-principle-of-least-privilege">Permission grants adhere to the
+href="#security-considerations">Permission grants adhere to the
 embedder</a>, which presents a paradox of control: it seems we can present
 people an option to control permissions at a coarse but understandable
 granularity; or we can present an option to control permissions at a fine but
 confusing granularity.</p>
 
-<p>UAs MAY provide configuration options to mitigate this risk, such as making
-permission grants be ephemeral (non-persistent) by default, persisting
-permission grants on the basis of the (embedder, embedee) tuple rather than just
-by embedder, or other means. This proposal does not recommend or require any
-specific mitigation techniques.</p>
+<p>UAs may provide advanced configuration options to mitigate this risk. These
+options would place more control back into the hands of users. For example, a
+user-controlled whitelist could be used to allow embedees from certain origins
+to get permission access without delegation. Alternatively, UAs may have an
+option which allows embedees to independently prompt a user for permission but
+the decision is not persisted by default. This proposal does not recommend or
+require any specific mitigation techniques.</p>
 
 </section>
 
@@ -595,8 +596,8 @@ specific mitigation techniques.</p>
 
 <h2>Acknowledgements</h2>
 
-<p>Thanks to Adrienne Porter Felt, Alex Russell, Ben Wells, and Mike West for
-advice and feedback.</p>
+<p>Thanks to Adrienne Porter Felt, Mounir Lamouri, Alex Russell, Ben Wells, and
+Mike West for advice and feedback.</p>
 
 </section>
 

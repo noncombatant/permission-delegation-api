@@ -255,9 +255,8 @@ relation to the above problems, are:</p>
 
 <ol>
   <li>
-    The user does not need to understand the nature of composable web
-    applications because they only ever make decisions about the top-level
-    origin.
+    The user does not need to understand the nature of composed applications
+    because they only ever make decisions about the top-level origin.
   </li>
   <li>
     It is clear how to persist user decisions: they are only ever stored for the
@@ -341,8 +340,9 @@ access if the embedder loses access.</p>
 <p>Note that an embedder MUST still be able to ask for a permission to be
 delegated even before it has access to use the permission itself. In cases like
 this, a request to use the permission by the embedee SHOULD trigger an automatic
-request to use the permission by the embedder. This allows embedees to get
-access to permissions without embedders having to get access up front.</p>
+request to use the permission on behalf of the embedder. This allows embedees to
+acquire access to permissions without embedders having to acquire access up
+front.</p>
 
 <p>If an embedee performs a cross-origin navigation the permission MUST be
 implicitly un-delegated and the embedee will lose access. This prevents

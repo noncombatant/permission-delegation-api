@@ -219,10 +219,11 @@ origins are <dfn>composed applications</dfn>.</p>
 <h2>Background And Motivations</h2>
 
 <p>Web applications are able to request permissions, such as geolocation, using
-various APIs on the web platform. In many UAs these permission requests will
-trigger prompts to the user. The user can make a decision about whether to allow
-access to the permission to the requesting origin. In many UAs these user
-decisions will also be persisted, such that the user will not have to make a
+various APIs on the web platform. Many UAs will defer the decision to the user,
+prompting the user to make a decision about the permission (e.g. Allow, Deny,
+satisfy the request using a particular input source, et c.). Thus the user has
+some control over the capabilities they grant to a requesting origin. Many UAs
+will persist the user's decisions, so that the user will not have to make a
 decision for subsequent access requests.</p>
 
 <p>Web applications are composable: one web application (the embedder) can embed

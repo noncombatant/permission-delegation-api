@@ -231,38 +231,33 @@ cross-origin embedee request permissions, it can be problematic from the
 perspective of both the user and the embedder. There are 4 reasons for this:</p>
 
 <ol>
-  <li>
-    People don’t have a good understanding of permission requests from embedees.
-    There is often no UI in the UA indicating that embedees are present or what
-    their origin is. They may even be invisible on a page. The concept of
-    composable applications is not a simple one to convey. The results of a user
-    study [[iframe-permissions-study]] showed that participants were generally
-    confused about who they were granting access to when a permission request
-    came from an embedee.
-  </li>
-  <li>
-    It’s unclear how a UA should persist the permission decisions people make
-    for composed applications. Different UAs persist people’s decisions about
-    embedees in different ways. Some UAs associate the permission grant to the
-    combination of the embedder’s origin and the embedee’s origin, such that the
-    UA recalls the decision about the embedee’s permissions only when embedded
-    in that same embedder. Other UAs associate the grant only to the requesting
-    origin, regardless of whether and where it is embedded. Either mechanism is
-    likely to violate people’s expectations, at least some of the time. The
-    inconsistency across — and even within — UAs further exacerbates the
-    problem.
-  </li>
-  <li>
-    It’s difficult to build understandable permission management UI. This is
-    particularly true if UAs persist decisions to a combination of the
-    embedder’s and embedee’s origin. UI surfaces such as those for revocation
-    and auditing must cope with displaying two origins in a way that people can
-    understand.
-  </li>
-  <li>
-    Embedders have no way to regulate access to their embedees. This means that
-    embedees can behave in ways that reflect badly on the embedder.
-  </li>
+
+<li>People don’t have a good understanding of permission requests from embedees.
+There is often no UI in the UA indicating that embedees are present or what
+their origin is. They may even be invisible on a page. The concept of composable
+applications is not a simple one to convey. The results of a user study
+[[iframe-permissions-study]] showed that participants were generally confused
+about who they were granting access to when a permission request came from an
+embedee.</li>
+
+<li>It’s unclear how a UA should persist the permission decisions people make
+for composed applications. Different UAs persist people’s decisions about
+embedees in different ways. Some UAs associate the permission grant to the
+combination of the embedder’s origin and the embedee’s origin, such that the UA
+recalls the decision about the embedee’s permissions only when embedded in that
+same embedder. Other UAs associate the grant only to the requesting origin,
+regardless of whether and where it is embedded. Either mechanism is likely to
+violate people’s expectations, at least some of the time. The inconsistency
+across — and even within — UAs further exacerbates the problem.</li>
+
+<li>It’s difficult to build understandable permission management UI. This is
+particularly true if UAs persist decisions to a combination of the embedder’s
+and embedee’s origin. UI surfaces such as those for revocation and auditing must
+cope with displaying two origins in a way that people can understand.</li>
+
+<li>Embedders have no way to regulate access to their embedees. This means that
+embedees can behave in ways that reflect badly on the embedder.</li>
+
 </ol>
 </p>
 
@@ -274,22 +269,19 @@ the application: that of the top-level embedder. The benefits of this, with
 relation to the above problems, are:</p>
 
 <ol>
-  <li>
-    The user does not need to understand the nature of composed applications
-    because they only ever make decisions about the top-level origin.
-  </li>
-  <li>
-    It is clear how to persist user decisions: they are only ever stored for the
-    top-level origin.
-  </li>
-  <li>
-    Because decisions are only ever made about the top-level origin, it is much
-    easier to build permission management UI.
-  </li>
-  <li>
-    Because embedees cannot gain access on their own, embedders are able to
-    police their embedders.
-  </li>
+
+<li>The user does not need to understand the nature of composed applications
+because they only ever make decisions about the top-level origin.</li>
+
+<li>It is clear how to persist user decisions: they are only ever stored for the
+top-level origin.</li>
+
+<li>Because decisions are only ever made about the top-level origin, it is much
+easier to build permission management UI.</li>
+
+<li>Because embedees cannot gain access on their own, embedders are able to
+police their embedders.</li>
+
 </ol>
 </p>
 
@@ -414,12 +406,8 @@ status.</p>
 field which specifies the embedee:</p>
 
 <dl class='idl' title='dictionary PermissionDescriptor'>
-  <dt>
-    required PermissionName <a>name</a>
-  </dt>
-  <dt>
-    HTMLIframeElement embedee
-  </dt>
+<dt>required PermissionName <a>name</a></dt>
+<dt>HTMLIframeElement embedee</dt>
 </dl>
 
 <p>The embedee specified must be nested in the caller’s browsing context

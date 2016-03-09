@@ -307,13 +307,15 @@ efficient implementations.</p>
 
 <h2>Permission Restrictions For Embedded Web Applications</h2>
 
-<p>Cross-origin embedees SHOULD only be able to acquire permission grants by
-explicit delegation from the embedder using the API described in <a
-href="#delegating-permissions">Delegating Permissions</a>. In cases where an
-embedder has chosen not to delegate a permission, the UA SHOULD prevent the
-embedee from triggering permission prompts to the user, and the UA SHOULD
-prevent the embedee from acquiring any permissions based on a prior decision
-made by the user.</p>
+<p>Before granting a permission to an embedee with a different origin than its
+embedder, UAs MUST require that the embedder (a) hold that permission itself;
+and (b) explicitly delegate the permission to the embedee using the API described in <a
+href="#delegating-permissions">Delegating Permissions</a>.
+
+<p>In cases where an embedder has chosen not to delegate a permission, the UA
+MUST prevent the embedee from triggering permission prompts to the user, and the
+UA SHOULD prevent the embedee from acquiring any permissions based on a prior
+decision made by the user.</p>
 
 <p>UAs SHOULD apply these restrictions to all existing and future permissions
 defined in the <a>PermissionName enum</a>.</p>

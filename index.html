@@ -312,9 +312,9 @@ embedder, UAs MUST require that the embedder (a) hold that permission itself;
 and (b) explicitly delegate the permission to the embedee using the API described in <a
 href="#delegating-permissions">Delegating Permissions</a>.
 
-<p>In cases where an embedder has chosen not to delegate a permission, the UA
-MUST prevent the embedee from triggering permission prompts to the user, and the
-UA SHOULD prevent the embedee from acquiring any permissions based on a prior
+<p>In cases where an embedder has (yet) delegated a permission, the UA MUST
+prevent the embedee from triggering permission prompts to the user, and the UA
+SHOULD prevent the embedee from acquiring any permissions based on a prior
 decision made by the user.</p>
 
 <p>UAs SHOULD apply these restrictions to all existing and future permissions
@@ -341,16 +341,17 @@ A declarative syntax in the HTML tag that instantiates the embedee; and an
 imperative syntax that extends the <a>Permissions interface</a>. These are
 described below.</p>
 
-<p>Once a permission has been delegated to an embedee, the embedee MUST have
-access to use the permission as long as the following requirements are met:
+<p>To delegate a permission to an embedee, an embedder MUST meet the following
+conditions:</p>
 
 <ol>
 
-<li>The embedder and embedee meet the minimum security requirements to ask for
-the permission in the first place. Currently this requires that both embedder
-and embedee be running in a <a>privileged context</a>.</li>
+<li>The embedder and embedee MUST both meet the minimum security requirements to
+ask for the permission in the first place. Currently this requires that both
+embedder and embedee be running in a <a>privileged context</a>.</li>
 
-<li>The embedder itself has access to the permission.</li>
+<li>The embedder itself MUST access to the permission, or must request it of the
+user.</li>
 
 </ol>
 

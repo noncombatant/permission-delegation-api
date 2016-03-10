@@ -380,7 +380,7 @@ unintentionally delegating access to other origins.</p>
 The permissions attribute is defined on the <a>iframe element</a>.
 
 <pre class='idl'>
-interface HTMLIFrameElement : HTMLElement {
+partial interface HTMLIFrameElement : HTMLElement {
   [PutForwards=value] readonly attribute DOMSettableTokenList permissions;
 };
 </pre>
@@ -402,12 +402,12 @@ delegating and undelegating permissions as well as querying the delegation
 status.</p>
 
 <pre class='idl'>
-  [Exposed=(Window,Worker)]
-  interface Permissions {
-    Promise delegate((PermissionDescriptor or sequence&lt;PermissionDescriptor&gt;) permission);
-    Promise undelegate((PermissionDescriptor or sequence&lt;PermissionDescriptor&gt;) permission);
-    Promise&lt;boolean&gt; isDelegated(PermissionDescriptor permission);
-  };
+[Exposed=(Window,Worker)]
+partial interface Permissions {
+  Promise delegate((PermissionDescriptor or sequence&lt;PermissionDescriptor&gt;) permission);
+  Promise undelegate((PermissionDescriptor or sequence&lt;PermissionDescriptor&gt;) permission);
+  Promise&lt;boolean&gt; isDelegated(PermissionDescriptor permission);
+};
 </pre>
 
 <p>When called with these functions <a>PermissionDescriptor</a> must contain a

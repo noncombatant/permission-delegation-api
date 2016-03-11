@@ -347,8 +347,13 @@ conditions:</p>
 <ol>
 
 <li>The embedder and embedee MUST both meet the minimum security requirements to
-ask for the permission in the first place. Currently this requires that both
-embedder and embedee be running in a <a>privileged context</a>.</li>
+ask for the permission in the first place. For <a>powerful features</a>, such as
+<code>getUserMedia</code>, this requires that both embedder and embedee be
+running in a <a>privileged context</a>. Not all features require that the
+calling origin be in a privileged context or meet other safety standards. But
+for those that do, the embedder must meet the requirements before being able to
+delegate permission to an embedee, and the embedee must also meet the
+requirements.</li>
 
 <li>The embedder itself MUST access to the permission, or must request it of the
 user.</li>

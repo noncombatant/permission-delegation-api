@@ -10,11 +10,8 @@ class='remove'></script>
 <script class='remove'>
 // (this is to make tidy happy)
 var respecConfig = {
-  specStatus:           "ED",
+  specStatus:           "WD",
   shortName:            "permission-delegation",
-  //publishDate:          "2016-02-17",
-  //previousPublishDate:  "2016-02-17",
-  //previousMaturity:     "WD",
   edDraftURI: "https://github.com/noncombatant/permission-delegation-api",
   // if this is a LCWD, uncomment and set the end of its review period
   // lcEnd: "20015-08-05",
@@ -100,13 +97,13 @@ var respecConfig = {
 
 <section id='abstract'>
 
-<p>This document provides a recommendation for how UAs should manage access to
-permissions in applications built from cross-origin components. Namely, it is
-recommended that UAs only allow permissions to be given to embedded applications
-via delegation from the embedding application.</p>
+<p>This document proposes a recommendation for how UAs should manage access to
+permissions in applications built from cross-origin components. We recommend
+that UAs only allow permissions to be granted to embedded applications via
+explicit delegation from the embedding application.</p>
 
-<p>A web platform API for delegating permissions to embedded applications is
-also described. This API allows a web application to explicitly delegate and
+<p>We describe a web platform API for delegating permissions to embedded
+applications. This API allows a web application to explicitly delegate and
 un-delegate permissions that it holds to cross-origin embedded applications. It
 also allows a web application to query the status of delegation to an embedded
 application.</p>

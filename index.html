@@ -10,11 +10,10 @@ class='remove'></script>
 <script class='remove'>
 // (this is to make tidy happy)
 var respecConfig = {
-  specStatus:           "ED",
+  specStatus:           "WD",
+  previousMaturity:     "WD",
+  previousPublishDate:  "2016-03-11",
   shortName:            "permission-delegation",
-  //publishDate:          "2016-02-17",
-  //previousPublishDate:  "2016-02-17",
-  //previousMaturity:     "WD",
   edDraftURI: "https://github.com/noncombatant/permission-delegation-api",
   // if this is a LCWD, uncomment and set the end of its review period
   // lcEnd: "20015-08-05",
@@ -100,13 +99,13 @@ var respecConfig = {
 
 <section id='abstract'>
 
-<p>This document provides a recommendation for how UAs should manage access to
-permissions in applications built from cross-origin components. Namely, it is
-recommended that UAs only allow permissions to be given to embedded applications
-via delegation from the embedding application.</p>
+<p>This document proposes a recommendation for how UAs should manage access to
+permissions in applications built from cross-origin components. We recommend
+that UAs only allow permissions to be granted to embedded applications via
+explicit delegation from the embedding application.</p>
 
-<p>A web platform API for delegating permissions to embedded applications is
-also described. This API allows a web application to explicitly delegate and
+<p>We describe a web platform API for delegating permissions to embedded
+applications. This API allows a web application to explicitly delegate and
 un-delegate permissions that it holds to cross-origin embedded applications. It
 also allows a web application to query the status of delegation to an embedded
 application.</p>
@@ -186,17 +185,22 @@ href='https://www.w3.org/TR/permissions/#permission-definition'>PermissionDescri
 <p>A <dfn><a href='https://www.w3.org/TR/powerful-features/#terms'>privileged
 context</a></dfn> is defined in [[!powerful-features]].</p>
 
-<p>A <dfn>permission</dfn>, generally, is an affordance in the UA to allow,
-deny, throttle, or otherwise regulate access to a <dfn>powerful feature</dfn>
-that the user, through the UA, may grant to the web origin. Examples of powerful
-features include [[geolocation-API]] and the <code>getUserMedia</code> API from
-[[webrtc]].</p>
-
 </section>
 
 <section>
 
 <h2>Definitions</h2>
+
+<p>A <dfn>powerful feature</dfn> is a web platform feature or API that allows an
+origin to have access to information the user may consider security- or
+privacy-sensitive, or access to pwoerful sensors on the platform the UA runs on,
+such as the camera or microphone.</p>
+
+<p>A <dfn>permission</dfn>, generally, is an affordance in the UA to allow,
+deny, throttle, or otherwise regulate access to a powerful feature that the
+user, through the UA, may grant to the web origin. Examples of powerful features
+include [[geolocation-API]] and the <code>getUserMedia</code> API from
+[[webrtc]].</p>
 
 <p>An <dfn>embedder</dfn> is a <a>Document</a> that includes a <a>nested
 browsing context</a>. An <dfn>embedee</dfn> is a Document contained
@@ -235,11 +239,11 @@ perspective of both the user and the embedder. There are 4 reasons for this:</p>
 
 <li>People don’t have a good understanding of permission requests from embedees.
 There is often no UI in the UA indicating that embedees are present or what
-their origin is. They may even be invisible on a page. The concept of composable
-applications is not a simple one to convey. The results of a user study
-[[iframe-permissions-study]] showed that participants were generally confused
-about who they were granting access to when a permission request came from an
-embedee.</li>
+their origin is. They may even be invisible on a page. It is not easy to
+communicate the concept of composed applications to people using the web. The
+results of a user study [[iframe-permissions-study]] showed that participants
+were generally confused about who they were granting access to when a permission
+request came from an embedee.</li>
 
 <li>It’s unclear how a UA should persist the permission decisions people make
 for composed applications. Different UAs persist people’s decisions about
@@ -251,23 +255,25 @@ regardless of whether and where it is embedded. Either mechanism is likely to
 violate people’s expectations, at least some of the time. The inconsistency
 across — and even within — UAs further exacerbates the problem.</li>
 
-<li>It’s difficult to build understandable permission management UI. This is
-particularly true if UAs persist decisions to a combination of the embedder’s
-and embedee’s origin. UI surfaces such as those for revocation and auditing must
-cope with displaying two origins in a way that people can understand.</li>
+<li>It is difficult to build a permission management UI that people can
+understand and use effectively. This is particularly true if UAs adhere
+permission grants to a combination of the embedder’s and embedees’ origins. UI
+surfaces for revocation and auditing must attempt to display multiple origins in
+a way that people can understand.</li>
 
-<li>Embedders have no way to regulate access to their embedees. This means that
-embedees can behave in ways that reflect badly on the embedder.</li>
+<li>Embedders currently have no way to regulate their embedees’ use of powerful
+features. Embedees can thus behave in ways that reflect badly on the
+embedder.</li>
 
 </ol>
 </p>
 
 <p>To address these issues, we recommend that UAs require embedders to
 explicitly delegate permissions to embedees, rather than allow embeddees to
-unilaterally use or request to use powerful features. People would only ever be
-required to make permission decisions about the <em>apparent</em> origin of
-the application: that of the top-level embedder. The benefits of this, with
-relation to the above problems, are:</p>
+unilaterally use or request to permissions. People would only ever be required
+to make permission decisions about the <em>apparent</em> origin of the
+application: that of the top-level embedder. The benefits of this, with relation
+to the above problems, are:</p>
 
 <ol>
 
@@ -347,8 +353,13 @@ conditions:</p>
 <ol>
 
 <li>The embedder and embedee MUST both meet the minimum security requirements to
-ask for the permission in the first place. Currently this requires that both
-embedder and embedee be running in a <a>privileged context</a>.</li>
+ask for the permission in the first place. For a <a>powerful feature</a>, such
+as <code>getUserMedia</code>, this requires that both embedder and embedee be
+running in a <a>privileged context</a>. Not all features require that the
+calling origin be in a privileged context or meet other safety standards. But
+for those that do, the embedder must meet the requirements before being able to
+delegate permission to an embedee, and the embedee must also meet the
+requirements.</li>
 
 <li>The embedder itself MUST access to the permission, or must request it of the
 user.</li>
@@ -380,7 +391,7 @@ unintentionally delegating access to other origins.</p>
 The permissions attribute is defined on the <a>iframe element</a>.
 
 <pre class='idl'>
-partial interface HTMLIFrameElement : HTMLElement {
+partial interface HTMLIFrameElement {
   [PutForwards=value] readonly attribute DOMSettableTokenList permissions;
 };
 </pre>

@@ -10,7 +10,7 @@
  *
  * Indices
  *   - .toc for the Table of Contents (<ol class="toc">)
- *     -> <span class="secno"> for the section numbers
+ *     + <span class="secno"> for the section numbers
  *   - #toc for the Table of Contents (<nav id="toc">)
  *   - ul.index for Indices (<a href="#ref">term</a><span>, in §N.M</span>)
  *   - table.index for Index Tables (e.g. for properties or elements)
@@ -113,39 +113,36 @@
 
 	div.head h2 { margin-bottom: 1.5em;}
 
-	div.head .logo {
+/** W3C Logo ******************************************************************/
+
+	.head .logo {
 		float: right;
-		margin: 0;
+		margin: 0.4rem 0 0.2rem .4rem;
 	}
 
-	@media screen {
-		div.head .logo > a {
-			display: inline-block;
-			margin: 0.4rem 0 0.2rem .4rem;
-		}
-
-		div.head img[src*="logos/W3C"] {
-			display: block;
-			border: solid #1a5e9a;
-			border-width: .65rem .7rem .6rem;
-			border-radius: .4rem;
-			background: #1a5e9a;
-			color: white;
-			font-weight: bold;
-		}
-
-		div.head a:hover > img[src*="logos/W3C"],
-		div.head a:focus > img[src*="logos/W3C"] {
-			background: #457cad;
-			border-color: #457cad;
-		}
-
-		div.head a:active > img[src*="logos/W3C"] {
-			background: #c00;
-			border-color: #c00;
-		}
+	.head img[src*="logos/W3C"] {
+		display: block;
+		border: solid #1a5e9a;
+		border-width: .65rem .7rem .6rem;
+		border-radius: .4rem;
+		background: #1a5e9a;
+		color: white;
+		font-weight: bold;
 	}
 
+	.head a:hover > img[src*="logos/W3C"],
+	.head a:focus > img[src*="logos/W3C"] {
+		opacity: .8;
+	}
+
+	.head a:active > img[src*="logos/W3C"] {
+		background: #c00;
+		border-color: #c00;
+	}
+
+	/* see also additional rules in Link Styling section */
+
+/** Copyright *****************************************************************/
 
 	p.copyright,
 	p.copyright small { font-size: small }
@@ -331,6 +328,7 @@
 		font: 100% sans-serif;   /* Reset all font styling to clear out UA styles */
 		font-family: inherit;    /* Inherit the font family. */
 		line-height: 1.2;        /* Keep wrapped headings compact */
+		hyphens: manual;         /* Hyphenated headings look weird */
 	}
 
 	h2, h3, h4, h5, h6 {
@@ -534,9 +532,11 @@
 	}
 
 	/* Backout above styling for W3C logo */
-	.head > p:first-child > a {
+	.head .logo,
+	.head .logo a {
 		border: none;
 		text-decoration: none;
+		background: transparent;
 	}
 
 /******************************************************************************/
@@ -828,8 +828,8 @@
 	table.index {
 		margin: 1em auto;
 		border-collapse: collapse;
-		width: 100%;
 		border: hidden;
+		width: 100%;
 	}
 	table.data caption,
 	table.index caption {
@@ -936,7 +936,7 @@ Possible extra rowspan handling
 
 	.toc a {
 		/* More spacing; use padding to make it part of the click target. */
-		padding-top: 0.1em;
+		padding-top: 0.1rem;
 		/* Larger, more consistently-sized click target */
 		display: block;
 		/* Reverse color scheme */
@@ -967,19 +967,14 @@ Possible extra rowspan handling
 	.toc > li li li li li { font-style:  italic;
 	                        font-size:   85%;    }
 
-	.toc > li             { margin: 1.5em 0;     }
+	.toc > li             { margin: 1.5rem 0;    }
 	.toc > li li          { margin: 0.3rem 0;    }
-	.toc > li li li       { margin-left: 2em;
-	                        margin-left: 2rem;   }
+	.toc > li li li       { margin-left: 2rem;   }
 
 	/* Section numbers in a column of their own */
-	:not(li) > .toc {
-		margin-left: 5em;
-	}
-
 	.toc .secno {
 		float: left;
-		width: 4em;
+		width: 4rem;
 		white-space: nowrap;
 	}
 	.toc > li li li li .secno {
@@ -1027,7 +1022,7 @@ Possible extra rowspan handling
 /** Index *********************************************************************/
 
 	/* Index Lists: Layout */
-	ul.index       { margin-left: 0; columns: 15em; -webkit-columns: 15em; -moz-columns: 15em; text-indent: 1em hanging; }
+	ul.index       { margin-left: 0; columns: 15em; text-indent: 1em hanging; }
 	ul.index li    { margin-left: 0; list-style: none; break-inside: avoid; }
 	ul.index li li { margin-left: 1em }
 	ul.index dl    { margin-top: 0; }
@@ -1106,6 +1101,12 @@ Possible extra rowspan handling
 	.figure .caption, .sidefigure .caption, figcaption {
 		/* in case figure is overlarge, limit caption to 50em */
 		max-width: 50rem;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.overlarge > table {
+		/* limit preferred width of table */
+		max-width: 50em;
 		margin-left: auto;
 		margin-right: auto;
 	}
@@ -1293,7 +1294,7 @@ Possible extra rowspan handling
 
 
 /********************************************
- Remember to remove the logo section when copypasting freshly.
+ Remember to fix the logo section when copypasting freshly.
  */
 </style>
   <meta content="Bikeshed 1.0.0" name="generator">
@@ -1336,7 +1337,7 @@ Possible extra rowspan handling
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Permission Delegation To Embedded Web Applications</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-03-18">18 March 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-03-21">21 March 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1445,7 +1446,7 @@ such as the camera or microphone.</p>
 deny, throttle, or otherwise regulate access to a powerful feature that the
 user, through the UA, may grant to the web origin. Examples of powerful features
 include <a data-link-type="biblio" href="#biblio-geolocation-api">[geolocation-API]</a> and the <code>getUserMedia</code> API from <a data-link-type="biblio" href="#biblio-webrtc">[webrtc]</a>.</p>
-    <p>An <dfn data-dfn-type="dfn" data-noexport="" id="embedder">embedder<a class="self-link" href="#embedder"></a></dfn> is a <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document">Document</a> that includes a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#nested-browsing-context">nested
+    <p>An <dfn data-dfn-type="dfn" data-noexport="" id="embedder">embedder<a class="self-link" href="#embedder"></a></dfn> is a <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document">Document</a></code> that includes a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#nested-browsing-context">nested
 browsing context</a>. An <dfn data-dfn-type="dfn" data-noexport="" id="embedee">embedee<a class="self-link" href="#embedee"></a></dfn> is a Document contained
 within the nested browsing context of an embedder. Typically, an embedder would
 include an embedee using an <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/embedded-content.html#the-iframe-element">iframe</a></code> element. A <dfn data-dfn-type="dfn" data-noexport="" id="top-level-embedder">top-level
@@ -1558,7 +1559,7 @@ conditions:</p>
 ask for the permission in the first place. For a <a data-link-type="dfn" href="#powerful-feature" id="ref-for-powerful-feature-1">powerful feature</a>, such
 as <code>getUserMedia</code>, this requires that both embedder and embedee be
 running in a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#secure-context">secure context</a>. Not all features require that the
-calling origin be in a privileged context or meet other safety standards. But
+calling origin be in a secure context or meet other safety standards. But
 for those that do, the embedder must meet the requirements before being able to
 delegate permission to an embedee, and the embedee must also meet the
 requirements.
@@ -1605,10 +1606,11 @@ partial interface <a class="idl-code" data-link-type="interface" href="https://w
 </pre>
      <p>When called with these functions <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a></code> must contain a
 field which specifies the embedee:</p>
-     <dl class="idl" title="dictionary PermissionDescriptor">
-      <dt>required PermissionName <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-doctype-name">name</a>
-      <dt>HTMLIframeElement embedee
-     </dl>
+<pre class="idl def">dictionary <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a> {
+  required <a data-link-type="idl-name" href="https://w3c.github.io/permissions/#permission-registry">PermissionName</a> <dfn class="idl-code" data-dfn-for="PermissionDescriptor" data-dfn-type="dict-member" data-export="" data-type="PermissionName " id="dom-permissiondescriptor-name">name<a class="self-link" href="#dom-permissiondescriptor-name"></a></dfn>;
+  <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/embedded-content.html#htmliframeelement">HTMLIFrameElement</a> <dfn class="idl-code" data-dfn-for="PermissionDescriptor" data-dfn-type="dict-member" data-export="" data-type="HTMLIFrameElement " id="dom-permissiondescriptor-embedee">embedee<a class="self-link" href="#dom-permissiondescriptor-embedee"></a></dfn>;
+};
+</pre>
      <p>The embedee specified must be nested in the caller’s browsing context
 otherwise the request for delegation will be rejected.</p>
      <p>Calling delegate will cause the given permissions to be delegated to their
@@ -1624,7 +1626,7 @@ permission is delegated to the given frame or to false otherwise.</p>
     <p>Consider an embedder https://restaurant.example.net whose developers want to
 show a map on the page that enables people to get directions to the restaurant.
 They can do so by instantiating an iframe to the maps service
-https://maps.example.com, and by explicitly delegating the <var>geolocation</var> permission: </p>
+https://maps.example.com, and by explicitly delegating the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#idl-def-PermissionName.geolocation">"geolocation"</a></code> permission: </p>
 <pre class="example highlight" id="example-c185cfa5"><a class="self-link" href="#example-c185cfa5"></a>&lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation">&lt;/iframe>
 </pre>
     <p>Consider next that the developers of https://restaurant.example.net learn of
@@ -1633,7 +1635,7 @@ notifications <a data-link-type="biblio" href="#biblio-whatwg-notifications">[no
 destination on time. For example, people may want to know not just the
 directions to the restaurant, but also to be notified when they should leave to
 make it by the time their reservation starts. The developers would explicitly
-grant the embedded iframe a second permission, <var>notifications</var>:</p>
+grant the embedded iframe a second permission, <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#idl-def-PermissionName.notifications">"notifications"</a></code>:</p>
 <pre class="example highlight" id="example-d460f294"><a class="self-link" href="#example-d460f294"></a>&lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation notifications">&lt;/iframe>
 </pre>
     <p>Delegation via the imperative API:</p>
@@ -1825,8 +1827,14 @@ Mike West for advice and feedback.</p>
    <li><a href="#delegate">delegate</a><span>, in §1</span>
    <li><a href="#dom-permissions-delegate">delegate(permission)</a><span>, in §4.2</span>
    <li><a href="#embedder">embedder</a><span>, in §1</span>
-   <li><a href="#embedee">embedee</a><span>, in §1</span>
+   <li>
+    embedee
+    <ul>
+     <li><a href="#embedee">definition of</a><span>, in §1</span>
+     <li><a href="#dom-permissiondescriptor-embedee">dict-member for PermissionDescriptor</a><span>, in §4.2</span>
+    </ul>
    <li><a href="#dom-permissions-isdelegated">isDelegated(permission)</a><span>, in §4.2</span>
+   <li><a href="#dom-permissiondescriptor-name">name</a><span>, in §4.2</span>
    <li><a href="#permission">permission</a><span>, in §1</span>
    <li><a href="#dom-htmliframeelement-permissions">permissions</a><span>, in §4.1</span>
    <li><a href="#powerful-feature">powerful feature</a><span>, in §1</span>
@@ -1841,8 +1849,7 @@ embedder</a><span>, in §1</span>
     <a data-link-type="biblio" href="#biblio-whatwg-dom">[WHATWG-DOM]</a> defines the following terms:
     <ul>
      <li><a href="https://dom.spec.whatwg.org/#domtokenlist">DOMTokenList</a>
-     <li><a href="https://dom.spec.whatwg.org/#concept-document">document</a>
-     <li><a href="https://dom.spec.whatwg.org/#concept-doctype-name">name</a>
+     <li><a href="https://dom.spec.whatwg.org/#document">Document</a>
      <li><a href="https://dom.spec.whatwg.org/#dom-domtokenlist-value">value</a>
     </ul>
    <li>
@@ -1856,12 +1863,14 @@ embedder</a><span>, in §1</span>
    <li>
     <a data-link-type="biblio" href="#biblio-permissions">[permissions]</a> defines the following terms:
     <ul>
+     <li><a href="https://w3c.github.io/permissions/#idl-def-PermissionName.geolocation">"geolocation"</a>
+     <li><a href="https://w3c.github.io/permissions/#idl-def-PermissionName.notifications">"notifications"</a>
      <li><a href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a>
      <li><a href="https://w3c.github.io/permissions/#permission-registry">PermissionName</a>
      <li><a href="https://w3c.github.io/permissions/#permissions-interface">Permissions</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-powerful-features">[powerful-features]</a> defines the following terms:
+    <a data-link-type="biblio" href="#biblio-secure-contexts-1">[secure-contexts-1]</a> defines the following terms:
     <ul>
      <li><a href="https://w3c.github.io/webappsec-secure-contexts/#secure-context">secure context</a>
     </ul>
@@ -1878,10 +1887,10 @@ embedder</a><span>, in §1</span>
    <dd>Ian Hickson. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-permissions">[PERMISSIONS]
    <dd>Mounir Lamouri; Marcos Caceres. <a href="https://w3c.github.io/permissions/">The Permissions API</a>. 7 April 2015. WD. URL: <a href="https://w3c.github.io/permissions/">https://w3c.github.io/permissions/</a>
-   <dt id="biblio-powerful-features">[POWERFUL-FEATURES]
-   <dd>Mike West; Yan Zhu. <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/">Privileged Contexts</a>. 24 April 2015. WD. URL: <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/">https://w3c.github.io/webappsec/specs/powerfulfeatures/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
+   <dt id="biblio-secure-contexts-1">[SECURE-CONTEXTS-1]
+   <dd>Secure Contexts URL: <a href="https://w3c.github.io/webappsec-secure-contexts/">https://w3c.github.io/webappsec-secure-contexts/</a>
    <dt id="biblio-service-workers">[SERVICE-WORKERS]
    <dd>Alex Russell; Jungkee Song; Jake Archibald. <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/">Service Workers</a>. 25 June 2015. WD. URL: <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/">https://slightlyoff.github.io/ServiceWorker/spec/service_worker/</a>
    <dt id="biblio-whatwg-dom">[WHATWG-DOM]
@@ -1895,6 +1904,8 @@ embedder</a><span>, in §1</span>
    <dd>Raymes Khoury; Chris Palmer. <a href="https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0">Simplifying &amp;lt;iframe&amp;gt; Permission Scoping in Chrome</a>. URL: <a href="https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0">https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0</a>
    <dt id="biblio-iframe-permissions-study">[IFRAME-PERMISSIONS-STUDY]
    <dd>Rebecca Rolfe; Ben Wells; Raymes Khoury. <a href="https://docs.google.com/presentation/d/1suzMhtvMtA11jxPUdH1jL1oPh-82rTymCnslgR3ehEE">Understanding Permission Requests From Iframes: Cafe Study Results</a>. URL: <a href="https://docs.google.com/presentation/d/1suzMhtvMtA11jxPUdH1jL1oPh-82rTymCnslgR3ehEE">https://docs.google.com/presentation/d/1suzMhtvMtA11jxPUdH1jL1oPh-82rTymCnslgR3ehEE</a>
+   <dt id="biblio-powerful-features">[POWERFUL-FEATURES]
+   <dd>Mike West; Yan Zhu. <a href="http://www.w3.org/TR/powerful-features/">Privileged Contexts</a>. 24 April 2015. WD. URL: <a href="http://www.w3.org/TR/powerful-features/">http://www.w3.org/TR/powerful-features/</a>
    <dt id="biblio-protection-of-information">[PROTECTION-OF-INFORMATION]
    <dd>Jerome H. Saltzer; Michael D. Schroeder. <a href="http://www.cs.virginia.edu/~evans/cs551/saltzer/">The Protection of Information in Computer Systems</a>. URL: <a href="http://www.cs.virginia.edu/~evans/cs551/saltzer/">http://www.cs.virginia.edu/~evans/cs551/saltzer/</a>
    <dt id="biblio-webrtc">[WEBRTC]
@@ -1912,6 +1923,11 @@ partial interface <a class="idl-code" data-link-type="interface" href="https://w
   Promise&lt;void> <a href="#dom-permissions-delegate">delegate</a>((<a data-link-type="idl-name" href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a> or sequence&lt;<a data-link-type="idl-name" href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a>>) <a href="#dom-permissions-delegate-permission-permission">permission</a>);
   Promise&lt;void> <a href="#dom-permissions-undelegate">undelegate</a>((<a data-link-type="idl-name" href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a> or sequence&lt;<a data-link-type="idl-name" href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a>>) <a href="#dom-permissions-undelegate-permission-permission">permission</a>);
   Promise&lt;boolean> <a href="#dom-permissions-isdelegated">isDelegated</a>(<a data-link-type="idl-name" href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a> <a href="#dom-permissions-isdelegated-permission-permission">permission</a>);
+};
+
+dictionary <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/permissions/#permission-definition">PermissionDescriptor</a> {
+  required <a data-link-type="idl-name" href="https://w3c.github.io/permissions/#permission-registry">PermissionName</a> <a data-type="PermissionName " href="#dom-permissiondescriptor-name">name</a>;
+  <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/embedded-content.html#htmliframeelement">HTMLIFrameElement</a> <a data-type="HTMLIFrameElement " href="#dom-permissiondescriptor-embedee">embedee</a>;
 };
 
 </pre>

@@ -57,20 +57,26 @@ spec: permissions; urlPrefix: https://w3c.github.io/permissions/#
         text: PermissionDescriptor; url: permission-definition
     type: enum
         text: PermissionName; url: permission-registry
+    type: enum-value
+        for: PermissionName
+            text: "geolocation"; url: idl-def-PermissionName.geolocation
+            text: "notifications"; url: idl-def-PermissionName.notifications
     type: interface
         text: Permissions; url: permissions-interface
-spec: powerful-features; urlPrefix: https://w3c.github.io/webappsec-secure-contexts/#
-    type: dfn
-        text: secure context; url: secure-context
-spec: service-workers; urlPrefix: https://slightlyoff.github.io/ServiceWorker/spec/service_worker/#
-    type: dfn
-        text: service worker; url: dfn-service-worker
 </pre>
 <pre class="link-defaults">
+spec: dom
+    type: interface
+        text: Document
 spec: html
     type: dfn
         text: nested browsing context
         text: top-level browsing context
+    type: interface
+        text: HTMLIFrameElement
+spec: service-workers
+    type: dfn
+        text: service worker; for: service worker
 </pre>
 
 <section>
@@ -88,7 +94,7 @@ user, through the UA, may grant to the web origin. Examples of powerful features
 include [[geolocation-API]] and the <code>getUserMedia</code> API from
 [[webrtc]].</p>
 
-<p>An <dfn>embedder</dfn> is a <a>Document</a> that includes a <a>nested
+<p>An <dfn>embedder</dfn> is a {{Document}} that includes a <a>nested
 browsing context</a>. An <dfn>embedee</dfn> is a Document contained
 within the nested browsing context of an embedder. Typically, an embedder would
 include an embedee using an <{iframe}> element. A <dfn>top-level
@@ -242,7 +248,7 @@ conditions:</p>
 ask for the permission in the first place. For a <a>powerful feature</a>, such
 as <code>getUserMedia</code>, this requires that both embedder and embedee be
 running in a <a>secure context</a>. Not all features require that the
-calling origin be in a privileged context or meet other safety standards. But
+calling origin be in a secure context or meet other safety standards. But
 for those that do, the embedder must meet the requirements before being able to
 delegate permission to an embedee, and the embedee must also meet the
 requirements.</li>
@@ -310,10 +316,12 @@ partial interface Permissions {
 <p>When called with these functions {{PermissionDescriptor}} must contain a
 field which specifies the embedee:</p>
 
-<dl class='idl' title='dictionary PermissionDescriptor'>
-<dt>required PermissionName <a>name</a></dt>
-<dt>HTMLIframeElement embedee</dt>
-</dl>
+<pre class='idl'>
+dictionary PermissionDescriptor {
+  required PermissionName name;
+  HTMLIFrameElement embedee;
+};
+</pre>
 
 <p>The embedee specified must be nested in the caller’s browsing context
 otherwise the request for delegation will be rejected.</p>
@@ -338,7 +346,7 @@ permission is delegated to the given frame or to false otherwise.</p>
 show a map on the page that enables people to get directions to the restaurant.
 They can do so by instantiating an iframe to the maps service
 https://maps.example.com, and by explicitly delegating the
-<var>geolocation</var> permission:
+{{"geolocation"}} permission:
 
 <pre class='example highlight'>
 &lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation"&gt;&lt;/iframe&gt;
@@ -350,7 +358,7 @@ notifications [[notifications]] when it’s time to leave to get to their
 destination on time. For example, people may want to know not just the
 directions to the restaurant, but also to be notified when they should leave to
 make it by the time their reservation starts. The developers would explicitly
-grant the embedded iframe a second permission, <var>notifications</var>:</p>
+grant the embedded iframe a second permission, {{"notifications"}}:</p>
 
 <pre class='example highlight'>
 &lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation notifications"&gt;&lt;/iframe&gt;

@@ -1,0 +1,566 @@
+<pre class='metadata'>
+Title: Permission Delegation To Embedded Web Applications
+Repository: noncombatant/permission-delegation-api
+Status: ED
+ED: https://github.com/noncombatant/permission-delegation-api
+Shortname: permission-delegation
+Level: 1
+Editor: Raymes Khoury, Google Inc. https://google.com/
+Editor: Chris Palmer, Google Inc. https://google.com/
+Abstract: <p>This document proposes a recommendation for how UAs should manage access to permissions in applications built from cross-origin components. We recommend that UAs only allow permissions to be granted to embedded applications via explicit delegation from the embedding application.</p>
+Abstract: <p>We describe a web platform API for delegating permissions to embedded applications. This API allows a web application to explicitly delegate and un-delegate permissions that it holds to cross-origin embedded applications. It also allows a web application to query the status of delegation to an embedded application.</p>
+Mailing List: public-webappsec@w3.org
+Mailing List Archives: http://lists.w3.org/Archives/Public/public-webappsec/
+
+Group: webappsec
+!Participate: <a href="https://github.com/noncombatant/permission-delegation-api">We are on Github.</a>
+!Participate: <a href="https://github.com/noncombatant/permission-delegation-api/issues">File a bug.</a>
+!Participate: <a href="https://github.com/noncombatant/permission-delegation-api/commits/gh-pages">Commit history.</a>
+!Participate: <a href="http://lists.w3.org/Archives/Public/public-webappsec/">Mailing list.</a>
+!Implementation status: <a href="http://crbug.com/new">Blink/Chromium</a>
+!Implementation status: <a href="TODO">Gecko</a>
+
+Markup Shorthands: css no, markdown yes
+</pre>
+<pre class=biblio>
+{
+    "iframe-permissions-study": {
+      "title":    "Understanding Permission Requests From Iframes: Cafe Study Results",
+      "href":     "https://docs.google.com/presentation/d/1suzMhtvMtA11jxPUdH1jL1oPh-82rTymCnslgR3ehEE",
+      "authors":  [
+        "Rebecca Rolfe",
+        "Ben Wells",
+        "Raymes Khoury"
+      ]
+    },
+    "iframe-permissions-chrome": {
+      "title":    "Simplifying &lt;iframe&gt; Permission Scoping in Chrome",
+      "href":     "https://docs.google.com/document/d/1iaocsSuVrU11FFzZwy7EnJNOwxhAHMroWSOEERw5hO0",
+      "authors":  [
+        "Raymes Khoury",
+        "Chris Palmer"
+      ]
+    },
+    "protection-of-information": {
+      "title": "The Protection of Information in Computer Systems",
+      "href": "http://www.cs.virginia.edu/~evans/cs551/saltzer/",
+      "authors": [
+        "Jerome H. Saltzer",
+        "Michael D. Schroeder"
+      ]
+    }
+}
+</pre>
+<pre class="anchors">
+spec: permissions; urlPrefix: https://w3c.github.io/permissions/#
+    type: dictionary
+        text: PermissionDescriptor; url: permission-definition
+    type: enum
+        text: PermissionName; url: permission-registry
+    type: enum-value
+        for: PermissionName
+            text: "geolocation"; url: idl-def-PermissionName.geolocation
+            text: "notifications"; url: idl-def-PermissionName.notifications
+    type: interface
+        text: Permissions; url: permissions-interface
+</pre>
+<pre class="link-defaults">
+spec: dom
+    type: interface
+        text: Document
+spec: html
+    type: dfn
+        text: nested browsing context
+        text: top-level browsing context
+    type: interface
+        text: HTMLIFrameElement
+spec: service-workers
+    type: dfn
+        text: service worker; for: service worker
+</pre>
+
+<section>
+
+<h2>Definitions</h2>
+
+<p>A <dfn>powerful feature</dfn> is a web platform feature or API that allows an
+origin to have access to information the user may consider security- or
+privacy-sensitive, or access to pwoerful sensors on the platform the UA runs on,
+such as the camera or microphone.</p>
+
+<p>A <dfn>permission</dfn>, generally, is an affordance in the UA to allow,
+deny, throttle, or otherwise regulate access to a powerful feature that the
+user, through the UA, may grant to the web origin. Examples of powerful features
+include [[geolocation-API]] and the <code>getUserMedia</code> API from
+[[webrtc]].</p>
+
+<p>An <dfn>embedder</dfn> is a {{Document}} that includes a <a>nested
+browsing context</a>. An <dfn>embedee</dfn> is a Document contained
+within the nested browsing context of an embedder. Typically, an embedder would
+include an embedee using an <{iframe}> element. A <dfn>top-level
+embedder</dfn> is an embedder loaded in a <a>top-level browsing context</a>.</p>
+
+<p>An embedder can <dfn>delegate</dfn> permissions it holds to its embedee(s),
+thus allowing the embedee to use the powerful feature to which the permission
+grants access. Similarly, an embedder can <dfn>undelegate</dfn> (revoke) a
+permission from an embedee.</p>
+
+<p>Applications built from an embedder and 1 or more embedees from different
+origins are <dfn>composed applications</dfn>.</p>
+
+</section>
+
+<section class='informative'>
+
+<h2>Background And Motivations</h2>
+
+<p>Web applications are able to request permissions, such as geolocation, using
+various APIs on the web platform. Many UAs will defer the decision to the user,
+prompting the user to make a decision about the permission (e.g. Allow, Deny,
+satisfy the request using a particular input source, et c.). Thus the user has
+some control over the capabilities they grant to a requesting origin. Many UAs
+will persist the user's decisions, so that the user will not have to make a
+decision for subsequent access requests.</p>
+
+<p>Web applications are composable: one web application (the embedder) can embed
+others (embedees) by using the <code>&lt;iframe&gt;</code> HTML tag. If a
+cross-origin embedee request permissions, it can be problematic from the
+perspective of both the user and the embedder. There are 4 reasons for this:</p>
+
+<ol>
+
+<li>People don’t have a good understanding of permission requests from embedees.
+There is often no UI in the UA indicating that embedees are present or what
+their origin is. They may even be invisible on a page. It is not easy to
+communicate the concept of composed applications to people using the web. The
+results of a user study [[iframe-permissions-study]] showed that participants
+were generally confused about who they were granting access to when a permission
+request came from an embedee.</li>
+
+<li>It’s unclear how a UA should persist the permission decisions people make
+for composed applications. Different UAs persist people’s decisions about
+embedees in different ways. Some UAs associate the permission grant to the
+combination of the embedder’s origin and the embedee’s origin, such that the UA
+recalls the decision about the embedee’s permissions only when embedded in that
+same embedder. Other UAs associate the grant only to the requesting origin,
+regardless of whether and where it is embedded. Either mechanism is likely to
+violate people’s expectations, at least some of the time. The inconsistency
+across — and even within — UAs further exacerbates the problem.</li>
+
+<li>It is difficult to build a permission management UI that people can
+understand and use effectively. This is particularly true if UAs adhere
+permission grants to a combination of the embedder’s and embedees’ origins. UI
+surfaces for revocation and auditing must attempt to display multiple origins in
+a way that people can understand.</li>
+
+<li>Embedders currently have no way to regulate their embedees’ use of powerful
+features. Embedees can thus behave in ways that reflect badly on the
+embedder.</li>
+
+</ol>
+</p>
+
+<p>To address these issues, we recommend that UAs require embedders to
+explicitly delegate permissions to embedees, rather than allow embeddees to
+unilaterally use or request to permissions. People would only ever be required
+to make permission decisions about the <em>apparent</em> origin of the
+application: that of the top-level embedder. The benefits of this, with relation
+to the above problems, are:</p>
+
+<ol>
+
+<li>The user does not need to understand the nature of composed applications
+because they only ever make decisions about the top-level origin.</li>
+
+<li>It is clear how to persist user decisions: they are only ever stored for the
+top-level origin.</li>
+
+<li>Because decisions are only ever made about the top-level origin, it is much
+easier to build permission management UI.</li>
+
+<li>Because embedees cannot gain access on their own, embedders are able to
+police their embedees.</li>
+
+</ol>
+</p>
+
+<p>Note that there is a necessary trade-off between scoping permission
+grants in as fine-grained a manner as possible versus scoping permission
+grants at a level of granularity that people can understand. See <a
+href="#security-considerations">Security Considerations</a>.</p>
+
+<p>Permission delegation is already possible on the web platform. For
+example, if a person has granted geolocation to an origin in a frame, the
+origin can expose geolocation data to other, cross-origin frames via
+<code>postMessage</code> (among other mechanisms). This document describes a
+new web platform API that enables embedders to delegate permissions in a way
+that the UA can effectively mediate on behalf of users. In addition to
+delegating access, the API also exposes means to revoke and query delegated
+access. We intend for the API to be convenient to invoke and to afford
+efficient implementations.</p>
+
+</section>
+
+<section>
+
+<h2>Permission Restrictions For Embedded Web Applications</h2>
+
+<p>Before granting a permission to an embedee with a different origin than its
+embedder, UAs MUST require that the embedder (a) hold that permission itself;
+and (b) explicitly delegate the permission to the embedee using the API described in <a
+href="#delegating-permissions">Delegating Permissions</a>.
+
+<p>In cases where an embedder has not (yet) delegated a permission, the UA MUST
+prevent the embedee from triggering permission prompts to the user, and the UA
+SHOULD prevent the embedee from acquiring any permissions based on a prior
+decision made by the user.</p>
+
+<p>UAs SHOULD apply these restrictions to all existing and future permissions
+defined in the {{PermissionName}} enum.</p>
+
+<p>As an exception to the above restrictions, embedees MUST be able to access
+permissions that are granted to their associated <a>service worker</a>. These
+permissions can be trivially accessed by communicating with the service worker
+so there is no need to require delegation.</p>
+
+<p>UAs MAY also allow cross-origin embedees to acquire permission grants through
+the use of advanced user configurations, such as custom whitelists (see
+<a href="#reduced-user-control">Reduced User Control</a> for further
+discussion).</p>
+
+</section>
+
+<section>
+
+<h2>Delegating Permissions</h2>
+
+<p>There are 2 ways for an embedder to delegate permission grants to an embedee:
+A declarative syntax in the HTML tag that instantiates the embedee; and an
+imperative syntax that extends the {{Permissions}} interface. These are
+described below.</p>
+
+<p>To delegate a permission to an embedee, an embedder MUST meet the following
+conditions:</p>
+
+<ol>
+
+<li>The embedder and embedee MUST both meet the minimum security requirements to
+ask for the permission in the first place. For a <a>powerful feature</a>, such
+as <code>getUserMedia</code>, this requires that both embedder and embedee be
+running in a <a>secure context</a>. Not all features require that the
+calling origin be in a secure context or meet other safety standards. But
+for those that do, the embedder must meet the requirements before being able to
+delegate permission to an embedee, and the embedee must also meet the
+requirements.</li>
+
+<li>The embedder itself MUST access to the permission, or must request it of the
+user.</li>
+
+</ol>
+
+</p>
+
+<p>The lifetime of the embedees access to the permission MUST be tied to the
+lifetime of the embedders access to the permission. That is, the embedee will
+only get access to the permission when the embedder has access and will lose
+access if the embedder loses access.</p>
+
+<p>Note that an embedder MUST still be able to ask for a permission to be
+delegated even before it has access to use the permission itself. In cases like
+this, a request to use the permission by the embedee SHOULD trigger an automatic
+request to use the permission on behalf of the embedder. This allows embedees to
+acquire access to permissions without embedders having to acquire access up
+front.</p>
+
+<p>If an embedee performs a cross-origin navigation the permission MUST be
+implicitly un-delegated and the embedee will lose access. This prevents
+unintentionally delegating access to other origins.</p>
+
+<section>
+
+<h3>Delegation Via The Declarative API</h3>
+
+The permissions attribute is defined on the <{iframe}> element.
+
+<pre class='idl'>
+partial interface HTMLIFrameElement {
+  [PutForwards=value] readonly attribute DOMTokenList permissions;
+};
+</pre>
+
+<p>The permissions attribute, when specified, will delegate the given set of
+permissions to the embedee running in the iframe. Its value must be an unordered
+set of unique space-separated tokens that are ASCII case-insensitive. The
+allowed values are the permission names that come from the {{PermissionName}}
+enum.</p>
+
+</section>
+
+<section>
+
+<h3>Delegation Via The Imperative API</h3>
+
+<p>The {{Permissions}} interface is extended to provide functions for
+delegating and undelegating permissions as well as querying the delegation
+status.</p>
+
+<pre class='idl'>
+[Exposed=(Window,Worker)]
+partial interface Permissions {
+  Promise&lt;void> delegate((PermissionDescriptor or sequence&lt;PermissionDescriptor&gt;) permission);
+  Promise&lt;void> undelegate((PermissionDescriptor or sequence&lt;PermissionDescriptor&gt;) permission);
+  Promise&lt;boolean&gt; isDelegated(PermissionDescriptor permission);
+};
+</pre>
+
+<p>When called with these functions {{PermissionDescriptor}} must contain a
+field which specifies the embedee:</p>
+
+<pre class='idl'>
+dictionary PermissionDescriptor {
+  required PermissionName name;
+  HTMLIFrameElement embedee;
+};
+</pre>
+
+<p>The embedee specified must be nested in the caller’s browsing context
+otherwise the request for delegation will be rejected.</p>
+
+<p>Calling delegate will cause the given permissions to be delegated to their
+embedees. The promise returned will resolve if the permission is successfully
+delegated, otherwise it will be rejected. Similarly, undelegate will cause the
+given permissions to no longer be delegated to the embedees.</p>
+
+<p>The isDelegated function returns a promise which will resolve to true if the
+permission is delegated to the given frame or to false otherwise.</p>
+
+</section>
+
+</section>
+
+<section>
+
+<h2>Examples</h2>
+
+<p>Consider an embedder https://restaurant.example.net whose developers want to
+show a map on the page that enables people to get directions to the restaurant.
+They can do so by instantiating an iframe to the maps service
+https://maps.example.com, and by explicitly delegating the
+{{"geolocation"}} permission:
+
+<pre class='example highlight'>
+&lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation"&gt;&lt;/iframe&gt;
+</pre>
+
+<p>Consider next that the developers of https://restaurant.example.net learn of
+a new feature that https://maps.example.com provides, which is to send people
+notifications [[notifications]] when it’s time to leave to get to their
+destination on time. For example, people may want to know not just the
+directions to the restaurant, but also to be notified when they should leave to
+make it by the time their reservation starts. The developers would explicitly
+grant the embedded iframe a second permission, {{"notifications"}}:</p>
+
+<pre class='example highlight'>
+&lt;iframe id="embedee" src="https://maps.example.com/" permissions="geolocation notifications"&gt;&lt;/iframe&gt;
+</pre>
+
+Delegation via the imperative API:
+
+<pre class='example highlight'>
+var iframe = document.getElementById('embedee');
+navigator.permissions.delegate({embedee: iframe, name: 'geolocation'}).then(
+  function() {
+    // Delegated geolocation.
+  }).catch(function() {
+    // Delegation failed.
+  });
+</pre>
+
+Undelegating permissions:
+
+<pre class='example highlight'>
+var iframe = document.getElementById('embedee');
+navigator.permissions.undelegate({embedee: iframe, name: 'geolocation'});
+</pre>
+
+Checking whether permission is delegated:
+
+<pre class='example highlight'>
+var iframe = document.getElementById('embedee');
+navigator.permissions.isDelegated({embedee: iframe, name: 'geolocation'})
+  .then(function(result) {
+    // result === true
+  });
+</pre>
+
+</section>
+
+<section class='informative'>
+
+<h2>Security Considerations</h2>
+
+<p>The most obvious downside of this proposal is that it breaks the principle of
+least privilege. In particular, an embedee can’t get access to a permission
+without the top-level embedder also getting access to the permission. Thus, the
+permission grant is broader than is strictly necessary.</p>
+
+<p>For example, consider an airline ticketing site (https://example.air) that
+embeds a payment processor site (https://example.cc) in an iframe. To better
+authenticate or verify the purchase of tickets, example.cc requests access to
+the UA's geolocation API. Under this proposal, the user would have to grant
+geolocation API access to the example.air origin, which would then delegate the
+power to example.cc. The grant would adhere, perhaps persistently, to
+example.air — regardless of what other origins it may embed — rather than to
+example.cc.</p>
+
+<p>We could extend this scenario to a potentially more problematic case in which
+a less trustworthy site (https://example.suspicious) also allows purchases and
+embeds an example.cc frame for credit card verification. Now the user has to
+give access to their location to example.suspicious as well as to example.cc to
+complete their purchase. Obviously, this is not ideal.</p>
+
+<p>Conversely, if embedees can directly request access to powerful features
+(currently the case in many UAs), people may not understand where the request
+comes from — although example.air is a composed application, people are often
+unaware that web applications can be composed of an embedder and potentially
+several embedees. Thus, when an embedee requests a permission grant, the person
+may not have any context for or understanding of what the UA is asking them. We
+believe that people perceive the top-level site as the ‘active application’ — if
+they perceive any ‘active application’ at all. Thus, we believe that if there is
+any chance for an origin to be or provide context for a permission request, it
+is the top-level, embedder origin.</p>
+
+<p>Additionally, embedees can take advantage of this confusion, and request
+permissions (or otherwise cost the person’s attention) in ways that disrupt the
+trust relationship between the person and the top-level embedder origin.</p>
+
+<p>This proposal puts the onus on the embedder, which has chosen to embed its
+embedees, to state the value proposition for the permission grant and to
+establish a relationship with the person using the application. It also enables
+and incentivizes embedders to ‘police’ their embedees in order to remain
+trustworthy.</p>
+
+</section>
+
+<section class='informative'>
+
+<h2>Other Risks</h2>
+
+<section>
+
+<h3>Compatibility</h3>
+
+<p>This document specifies breaking changes to the web platform. Namely,
+embedees that were once able to request and acquire permissions will no longer
+be able to do so. In order to restore functionality, embedders need to change
+their iframe tags to specify which permissions they wish to delegate. Usage of
+permissions from embedees is currently very low (see
+[[iframe-permissions-chrome]]), so the impact of this change should be small. It
+is recommended that UAs communicate this change with developers prior to
+implemenation in order to minimize the impact of the change. This can be done
+through the use of console warning messages or other channels.</p>
+
+<p>The upside of this breakage is that any harmful or annoying permission
+requests from embedees, which website owners did not intend their users to be
+exposed to will be prevented.</p>
+
+<p>It should also be noted that the restrictions specified in this document
+would prevent secure (HTTPS) embedees in non-secure (HTTP) embedders from
+getting access to permissions. The reason is that the availability of “powerful
+features” on non-secure origins is being phased out (see [[powerful-features]]).
+This means that a top-level embedder would never be able to access a
+permission in order to delegate it. This is actually not more restrictive than
+what is specified in [[powerful-features]], which requires all ancestor frames
+be secure in order for a frame to be considered secure. The restrictions
+specified in this document would not result in additional breakages.</p>
+
+</section>
+
+<section>
+
+<h3>Changing Embedee Permissions</h3>
+
+<p>iframe tags tend to be fairly widely copy/pasted. For example, to make it
+easy for developers to embed YouTube videos, YouTube provides a HTML iframe
+snippet which can be pasted into a website. Once these snippets have been
+deployed, it is hard for embedees to have them changed. For example, if the
+permissions required to run YouTube ever changed, it would be impossible for
+YouTube to update all of its embedders. While this may be problematic for
+embedees, it gives embedders an opportunity to decide whether they really want
+the embedee to have access to the permission.</p>
+
+</section>
+
+<section>
+
+<h3>Reduced User Control</h3>
+
+<p>Some people may want to be able to let an embed<em>ee</em> origin they
+consider trustworthy have access to some permissions, but may not want to grant
+those same permissions to an embedd<em>er</em> they consider untrustworthy. <a
+href="#security-considerations">Permission grants adhere to the
+embedder</a>, which presents a paradox of control: it seems we can present
+people an option to control permissions at a coarse but understandable
+granularity; or we can present an option to control permissions at a fine but
+confusing granularity. (See <a href="#background-and-motivations">Background And
+Motivations</a>.)</p>
+
+<p>UAs may provide advanced configuration options to mitigate this risk. These
+options would place more control back into the hands of users. For example, a
+user-controlled whitelist could be used to allow embedees from certain origins
+to get permission access without delegation. Alternatively, UAs may have an
+option which allows embedees to independently prompt a user for permission but
+the decision is not persisted by default. This proposal does not recommend or
+require any specific mitigation techniques.</p>
+
+<p>Composing origins to create more complex web applications is analogous to
+application composition from components of different sources on other platforms,
+and other platforms also tie the principal to just the top-level application.
+(For a definition of the term <em>principal</em>, see
+[[protection-of-information]]).</p>
+
+<ul>
+
+<li>Many Android applications include libraries (often packaged as JARs) from
+third parties, but the Android platform treats the embedding package as the
+principal, and adheres permission grants to that package. Consider an email
+reader, com.example.mail, that includes an IMAP client implemented in a JAR
+provided by the Foo Organization, that provides the package org.foo.imap.client.
+Android exposes only com.example.mail to the user, gives it a unique Linux UID,
+and all permission grants and revocations adhere to com.example.mail. If another
+package, e.g. org.messaging.android, also happens to use the org.foo.imap.client
+JAR, the JAR does not have the same permissions in both embedding packages.</li>
+
+<li>Many Windows applications include libraries (often packaged as DLLs) from
+third parties. Similar to the Android example, Windows separates privileges by
+associating each process with an access token. Processes holding different
+tokens are protected from each other, regardless of what DLLs they have loaded
+(even if they have loaded some of the same DLLs) and regardless of the source of
+those DLLs.</li>
+
+</ul>
+
+<p>Neither the Android nor Windows platforms afford the user any fine-grained
+control over the permissions available to code that ‘top-level’ applications
+depend on. This proposal for the Open Web Platform is consistent with the
+existing, analogous behavior on other platforms. Reasonable people may disagree
+on whether or not that is a good thing, but advocates for fine-grained control
+of dependencies must contend with the problems of user confusion, lack of
+context, and warning fatigue that fine-grained control would raise, and has
+proven to raise. TODO(palmer): Get a cite from felt or ainslie on reduced
+responsiveness to warnings.</p>
+
+</section>
+
+</section>
+
+<section>
+
+<h2>Acknowledgements</h2>
+
+<p>Thanks to Adrienne Porter Felt, Mounir Lamouri, Alex Russell, Ben Wells, and
+Mike West for advice and feedback.</p>
+
+</section>
+
+</body>

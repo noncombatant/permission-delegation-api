@@ -207,18 +207,16 @@ efficient implementations.</p>
 
 <p>An embedder is said to show an <dfn>intent to delegate</dfn> a permission to
 an embedee if it indicates that a permission should be delegated to that
-embedee. An embeder can show <a>intent to delegate</a> regardless of whether or
-not it actually holds the permission itself. Showing an <a>intent to
+embedee. There are 2 ways for an embedder to show <a>intent to delegate</a> to
+an embedee: A declarative syntax in the HTML tag that instantiates the embedee;
+and an imperative syntax that extends the {{Permissions}} interface. These are
+described below. An embeder can show <a>intent to delegate</a> regardless of
+whether or not it actually holds the permission itself. Showing an <a>intent to
 delegate</a> does not mean that the embedee will automatically gain acess to the
 permission.</p>
 
-<p>There are 2 ways for an embedder to show <a>intent to delegate</a> to an
-embedee: A declarative syntax in the HTML tag that instantiates the embedee; and
-an imperative syntax that extends the {{Permissions}} interface. These are
-described below.</p>
-
-<p>In order for an embedee to actually gain access to a permission, the UA MUST
-require that:</p>
+<p>In order for a cross-origin embedee to actually gain access to a permission,
+the UA MUST require that:</p>
 
 <ol>
 
@@ -237,7 +235,7 @@ secure context or meet other safety standards.</li>
 
 </p>
 
-<p>In cases where an embedder is not showing <a>intent to delegate</a> to an
+<p>In cases where an embedder is not showing an <a>intent to delegate</a> to an
 embedee, the UA MUST prevent the embedee from triggering permission prompts to
 the user, and the UA SHOULD prevent the embedee from acquiring any permissions
 based on a prior decision made by the user.</p>
@@ -253,10 +251,10 @@ the use of advanced user configurations, such as custom whitelists (see
 discussion).</p>
 
 <p>In cases where an embedder has shown <a>intent to delegate</a> to an embedee
-but does not yet hold permission, a request to use the permission by the embedee
-SHOULD trigger an automatic request to use the permission on behalf of the
-embedder. This allows embedees to acquire access to permissions without
-embedders having to acquire access up front.</p>
+but the embedder does not yet hold permission, a request to use the permission
+by the embedee SHOULD trigger an automatic request to use the permission on
+behalf of the embedder. This allows embedees to acquire access to permissions
+without embedders having to acquire access up front.</p>
 
 <p>The lifetime of the embedees access to the permission must be tied to the
 lifetime of the embedders access to the permission. Thus, if the embedder loses
@@ -298,8 +296,8 @@ insensitive. The allowed values are the permission names that come from the
 
 <h3>Delegation Via The Imperative API</h3>
 
-<p>The {{Permissions}} interface is extended to provide functions expressing and
-retracting an <a>intent to delegate</a> as well as querying the delegation
+<p>The {{Permissions}} interface is extended to provide functions for showing
+and retracting an <a>intent to delegate</a> as well as querying the delegation
 status.</p>
 
 <pre class='idl'>

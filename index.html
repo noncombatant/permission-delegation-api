@@ -1533,16 +1533,15 @@ efficient implementations.</p>
     <h2 class="heading settled" data-level="3" id="delegating-permissions"><span class="secno">3. </span><span class="content">Delegating Permissions</span><a class="self-link" href="#delegating-permissions"></a></h2>
     <p>An embedder is said to show an <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="intent to delegate" data-noexport="" id="intent-to-delegate">intent to delegate<span class="dfn-panel" data-deco=""><b><a href="#intent-to-delegate">#intent-to-delegate</a></b><b>Referenced in:</b><span><a href="#ref-for-intent-to-delegate-1">3. Delegating Permissions</a> <a href="#ref-for-intent-to-delegate-2">(2)</a> <a href="#ref-for-intent-to-delegate-3">(3)</a> <a href="#ref-for-intent-to-delegate-4">(4)</a> <a href="#ref-for-intent-to-delegate-5">(5)</a> <a href="#ref-for-intent-to-delegate-6">(6)</a> <a href="#ref-for-intent-to-delegate-7">(7)</a> <a href="#ref-for-intent-to-delegate-8">(8)</a></span><span><a href="#ref-for-intent-to-delegate-9">3.1. Delegation Via The Declarative API</a></span><span><a href="#ref-for-intent-to-delegate-10">3.2. Delegation Via The Imperative API</a> <a href="#ref-for-intent-to-delegate-11">(2)</a> <a href="#ref-for-intent-to-delegate-12">(3)</a> <a href="#ref-for-intent-to-delegate-13">(4)</a></span></span></dfn> a permission to
 an embedee if it indicates that a permission should be delegated to that
-embedee. An embeder can show <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-1">intent to delegate</a> regardless of whether or
-not it actually holds the permission itself. Showing an <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-2">intent to
+embedee. There are 2 ways for an embedder to show <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-1">intent to delegate</a> to
+an embedee: A declarative syntax in the HTML tag that instantiates the embedee;
+and an imperative syntax that extends the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#permissions-interface">Permissions</a></code> interface. These are
+described below. An embeder can show <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-2">intent to delegate</a> regardless of
+whether or not it actually holds the permission itself. Showing an <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-3">intent to
 delegate</a> does not mean that the embedee will automatically gain acess to the
 permission.</p>
-    <p>There are 2 ways for an embedder to show <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-3">intent to delegate</a> to an
-embedee: A declarative syntax in the HTML tag that instantiates the embedee; and
-an imperative syntax that extends the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#permissions-interface">Permissions</a></code> interface. These are
-described below.</p>
-    <p>In order for an embedee to actually gain access to a permission, the UA MUST
-require that:</p>
+    <p>In order for a cross-origin embedee to actually gain access to a permission,
+the UA MUST require that:</p>
     <ol>
      <li>The embedder holds that permission itself.
      <li>The embedeer is showing an <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-4">intent to delegate</a> that permission to the
@@ -1552,7 +1551,7 @@ permission in the first place. For a <a data-link-type="dfn" href="#powerful-fea
 secure context or meet other safety standards.
     </ol>
     <p></p>
-    <p>In cases where an embedder is not showing <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-5">intent to delegate</a> to an
+    <p>In cases where an embedder is not showing an <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-5">intent to delegate</a> to an
 embedee, the UA MUST prevent the embedee from triggering permission prompts to
 the user, and the UA SHOULD prevent the embedee from acquiring any permissions
 based on a prior decision made by the user.</p>
@@ -1564,10 +1563,10 @@ delegation.</p>
 the use of advanced user configurations, such as custom whitelists (see <a href="#reduced-user-control">Reduced User Control</a> for further
 discussion).</p>
     <p>In cases where an embedder has shown <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-6">intent to delegate</a> to an embedee
-but does not yet hold permission, a request to use the permission by the embedee
-SHOULD trigger an automatic request to use the permission on behalf of the
-embedder. This allows embedees to acquire access to permissions without
-embedders having to acquire access up front.</p>
+but the embedder does not yet hold permission, a request to use the permission
+by the embedee SHOULD trigger an automatic request to use the permission on
+behalf of the embedder. This allows embedees to acquire access to permissions
+without embedders having to acquire access up front.</p>
     <p>The lifetime of the embedees access to the permission must be tied to the
 lifetime of the embedders access to the permission. Thus, if the embedder loses
 access to the permission, the UA MUST revoke access from the embedee.</p>
@@ -1593,8 +1592,8 @@ insensitive. The allowed values are the permission names that come from the <cod
     </section>
     <section>
      <h3 class="heading settled" data-level="3.2" id="delegation-via-the-imperative-api"><span class="secno">3.2. </span><span class="content">Delegation Via The Imperative API</span><a class="self-link" href="#delegation-via-the-imperative-api"></a></h3>
-     <p>The <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#permissions-interface">Permissions</a></code> interface is extended to provide functions expressing and
-retracting an <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-10">intent to delegate</a> as well as querying the delegation
+     <p>The <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#permissions-interface">Permissions</a></code> interface is extended to provide functions for showing
+and retracting an <a data-link-type="dfn" href="#intent-to-delegate" id="ref-for-intent-to-delegate-10">intent to delegate</a> as well as querying the delegation
 status.</p>
 <pre class="idl def">[Exposed=(Window,Worker)]
 partial interface <a class="idl-code" data-link-type="interface" href="https://w3c.github.io/permissions/#permissions-interface">Permissions</a> {

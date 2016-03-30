@@ -203,78 +203,76 @@ efficient implementations.</p>
 
 <section>
 
-<h2>Permission Restrictions For Embedded Web Applications</h2>
+<h2>Delegating Permissions</h2>
 
-<p>Before granting a permission to an embedee with a different origin than its
-embedder, UAs MUST require that the embedder (a) hold that permission itself;
-and (b) explicitly delegate the permission to the embedee using the API described in <a
-href="#delegating-permissions">Delegating Permissions</a>.
+<p>An embedder is said to show an <dfn>intent to delegate</dfn> a permission to
+an embedee if it indicates that a permission should be delegated to that
+embedee. An embeder can show <a>intent to delegate</a> regardless of whether or
+not it actually holds the permission itself. Showing an <a>intent to
+delegate</a> does not mean that the embedee will automatically gain acess to the
+permission.</p>
 
-<p>In cases where an embedder has not (yet) delegated a permission, the UA MUST
-prevent the embedee from triggering permission prompts to the user, and the UA
-SHOULD prevent the embedee from acquiring any permissions based on a prior
-decision made by the user.</p>
+<p>There are 2 ways for an embedder to show <a>intent to delegate</a> to an
+embedee: A declarative syntax in the HTML tag that instantiates the embedee; and
+an imperative syntax that extends the {{Permissions}} interface. These are
+described below.</p>
 
-<p>UAs SHOULD apply these restrictions to all existing and future permissions
-defined in the {{PermissionName}} enum.</p>
+<p>In order for an embedee to actually gain access to a permission, the UA MUST
+require that:</p>
 
-<p>As an exception to the above restrictions, embedees MUST be able to access
-permissions that are granted to their associated <a>service worker</a>. These
-permissions can be trivially accessed by communicating with the service worker
-so there is no need to require delegation.</p>
+<ol>
+
+<li>The embedder holds that permission itself.</li>
+
+<li>The embedeer is showing an <a>intent to delegate</a> that permission to the
+given embedee.</li>
+
+<li>The embedee meets the minimum security requirements needed to ask for that
+permission in the first place. For a <a>powerful feature</a>, such as
+<code>getUserMedia</code>, this requires that the embedee be running in a
+<a>secure context</a>. Not all features require that the calling origin be in a
+secure context or meet other safety standards.</li>
+
+</ol>
+
+</p>
+
+<p>In cases where an embedder is not showing <a>intent to delegate</a> to an
+embedee, the UA MUST prevent the embedee from triggering permission prompts to
+the user, and the UA SHOULD prevent the embedee from acquiring any permissions
+based on a prior decision made by the user.</p>
+
+<p>As an exception, embedees MUST be able to access permissions that are granted
+to their associated <a>service worker</a>. These permissions can be trivially
+accessed by communicating with the service worker so there is no need to require
+delegation.</p>
 
 <p>UAs MAY also allow cross-origin embedees to acquire permission grants through
 the use of advanced user configurations, such as custom whitelists (see
 <a href="#reduced-user-control">Reduced User Control</a> for further
 discussion).</p>
 
-</section>
+<p>In cases where an embedder has shown <a>intent to delegate</a> to an embedee
+but does not yet hold permission, a request to use the permission by the embedee
+SHOULD trigger an automatic request to use the permission on behalf of the
+embedder. This allows embedees to acquire access to permissions without
+embedders having to acquire access up front.</p>
 
-<section>
+<p>The lifetime of the embedees access to the permission must be tied to the
+lifetime of the embedders access to the permission. Thus, if the embedder loses
+access to the permission, the UA MUST revoke access from the embedee.</p>
 
-<h2>Delegating Permissions</h2>
+<p>An embedder can also retract its <a>intent to delegate</a> to an embedee. In
+this case the UA MUST revoke access to the given permission from the
+embedee.</p>
 
-<p>There are 2 ways for an embedder to delegate permission grants to an embedee:
-A declarative syntax in the HTML tag that instantiates the embedee; and an
-imperative syntax that extends the {{Permissions}} interface. These are
-described below.</p>
+<p>If an embedee performs a cross-origin navigation the UA MUST implicitly
+retract the <a>intent to delegate</a> to that embedee which will cause the
+embedee to lose access. This prevents unintentionally delegating access to other
+origins.</p>
 
-<p>To delegate a permission to an embedee, an embedder MUST meet the following
-conditions:</p>
-
-<ol>
-
-<li>The embedder and embedee MUST both meet the minimum security requirements to
-ask for the permission in the first place. For a <a>powerful feature</a>, such
-as <code>getUserMedia</code>, this requires that both embedder and embedee be
-running in a <a>secure context</a>. Not all features require that the
-calling origin be in a secure context or meet other safety standards. But
-for those that do, the embedder must meet the requirements before being able to
-delegate permission to an embedee, and the embedee must also meet the
-requirements.</li>
-
-<li>The embedder itself MUST access to the permission, or must request it of the
-user.</li>
-
-</ol>
-
-</p>
-
-<p>The lifetime of the embedees access to the permission MUST be tied to the
-lifetime of the embedders access to the permission. That is, the embedee will
-only get access to the permission when the embedder has access and will lose
-access if the embedder loses access.</p>
-
-<p>Note that an embedder MUST still be able to ask for a permission to be
-delegated even before it has access to use the permission itself. In cases like
-this, a request to use the permission by the embedee SHOULD trigger an automatic
-request to use the permission on behalf of the embedder. This allows embedees to
-acquire access to permissions without embedders having to acquire access up
-front.</p>
-
-<p>If an embedee performs a cross-origin navigation the permission MUST be
-implicitly un-delegated and the embedee will lose access. This prevents
-unintentionally delegating access to other origins.</p>
+<p>UAs SHOULD apply these restrictions to all existing and future permissions
+defined in the {{PermissionName}} enum.</p>
 
 <section>
 
@@ -288,11 +286,11 @@ partial interface HTMLIFrameElement {
 };
 </pre>
 
-<p>The permissions attribute, when specified, will delegate the given set of
-permissions to the embedee running in the iframe. Its value must be an unordered
-set of unique space-separated tokens that are ASCII case-insensitive. The
-allowed values are the permission names that come from the {{PermissionName}}
-enum.</p>
+<p>The permissions attribute, when specified, shows an <a>intent to delegate</a>
+the given set of permissions to the embedee running in the iframe. Its value
+must be an unordered set of unique space-separated tokens that are ASCII case-
+insensitive. The allowed values are the permission names that come from the
+{{PermissionName}} enum.</p>
 
 </section>
 
@@ -300,8 +298,8 @@ enum.</p>
 
 <h3>Delegation Via The Imperative API</h3>
 
-<p>The {{Permissions}} interface is extended to provide functions for
-delegating and undelegating permissions as well as querying the delegation
+<p>The {{Permissions}} interface is extended to provide functions expressing and
+retracting an <a>intent to delegate</a> as well as querying the delegation
 status.</p>
 
 <pre class='idl'>
@@ -326,15 +324,12 @@ dictionary PermissionDescriptor {
 <p>The embedee specified must be nested in the caller’s browsing context
 otherwise the request for delegation will be rejected.</p>
 
-<p>Calling delegate will cause the given permissions to be delegated to their
-embedees. The promise returned will resolve if the permission is successfully
-delegated, otherwise it will be rejected. Similarly, undelegate will cause the
-given permissions to no longer be delegated to the embedees.</p>
+<p>The promise returned will resolve if an <a>intent to delegate</a> has been
+successfully shown, otherwise it will be rejected. Similarly, undelegate
+will cause the <a>intent to delegate</a> to be retracted.</p>
 
 <p>The isDelegated function returns a promise which will resolve to true if the
-permission is delegated to the given frame or to false otherwise.</p>
-
-</section>
+embedder is expressing an <a>intent to delegate</a> the given permission.
 
 </section>
 

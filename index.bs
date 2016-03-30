@@ -322,12 +322,14 @@ dictionary PermissionDescriptor {
 <p>The embedee specified must be nested in the caller’s browsing context
 otherwise the request for delegation will be rejected.</p>
 
-<p>The promise returned will resolve if an <a>intent to delegate</a> has been
-successfully shown, otherwise it will be rejected. Similarly, undelegate
-will cause the <a>intent to delegate</a> to be retracted.</p>
+<p>The promise returned will resolve if the call was successful and the embedder
+is now showing an <a>intent to delegate</a> to the embedee, otherwise it will be
+rejected. Similarly, undelegate will cause the <a>intent to delegate</a> to be
+retracted.</p>
 
 <p>The isDelegated function returns a promise which will resolve to true if the
-embedder is expressing an <a>intent to delegate</a> the given permission.
+embedder is showing an <a>intent to delegate</a> the given permission to the
+embedee.
 
 </section>
 

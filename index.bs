@@ -210,10 +210,10 @@ an embedee if it indicates that a permission should be delegated to that
 embedee. There are 2 ways for an embedder to show <a>intent to delegate</a> to
 an embedee: A declarative syntax in the HTML tag that instantiates the embedee;
 and an imperative syntax that extends the {{Permissions}} interface. These are
-described below. An embeder can show <a>intent to delegate</a> regardless of
+described below. An embedder can show <a>intent to delegate</a> regardless of
 whether or not it actually holds the permission itself. Showing an <a>intent to
-delegate</a> does not mean that the embedee will automatically gain acess to the
-permission.</p>
+delegate</a> does not mean that the embedee will automatically gain access to
+the permission.</p>
 
 <p>In order for a cross-origin embedee to actually gain access to a permission,
 the UA MUST require that:</p>

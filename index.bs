@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Permission Delegation To Embedded Web Applications
 Repository: noncombatant/permission-delegation-api
-Status: ED
+Status: unofficial
 ED: https://github.com/noncombatant/permission-delegation-api
 Shortname: permission-delegation
 Level: 1

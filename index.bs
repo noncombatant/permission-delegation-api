@@ -85,7 +85,7 @@ spec: service-workers
 
 <p>A <dfn>powerful feature</dfn> is a web platform feature or API that allows an
 origin to have access to information the user may consider security- or
-privacy-sensitive, or access to pwoerful sensors on the platform the UA runs on,
+privacy-sensitive, or access to powerful sensors on the platform the UA runs on,
 such as the camera or microphone.</p>
 
 <p>A <dfn>permission</dfn>, generally, is an affordance in the UA to allow,
